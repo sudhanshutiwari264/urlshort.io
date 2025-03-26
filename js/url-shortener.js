@@ -34,58 +34,8 @@ let currentLinkToDelete = null;
 const STORAGE_KEY = 'url2025_links';
 const CURRENT_YEAR = 2025; // Set to 2025 as requested
 
-// Get the base URL - support both local and remote access
-let BASE_URL = window.location.origin + '/'; // Default base URL
-
-// Function to get local network URL
-async function getLocalNetworkUrl() {
-  try {
-    // Try to get RTCPeerConnection to find local IP
-    const pc = new RTCPeerConnection({
-      iceServers: []
-    });
-
-    // Create a dummy data channel
-    pc.createDataChannel('');
-
-    // Create an offer to activate the ICE candidate gathering
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    // Wait for ICE gathering to complete
-    return new Promise((resolve) => {
-      pc.onicecandidate = (ice) => {
-        if (!ice || !ice.candidate || !ice.candidate.candidate) return;
-
-        // Extract IP address from ICE candidate
-        const localIpMatch = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(ice.candidate.candidate);
-        if (localIpMatch && localIpMatch[1]) {
-          const localIp = localIpMatch[1];
-          // Only use private network IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
-          if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))/.test(localIp)) {
-            pc.onicecandidate = null;
-            pc.close();
-            resolve(`http://${localIp}:${window.location.port || '80'}/`);
-          }
-        }
-      };
-
-      // Fallback if no valid candidate is found within 1 second
-      setTimeout(() => {
-        resolve(window.location.origin + '/');
-      }, 1000);
-    });
-  } catch (err) {
-    console.error('Error getting local IP:', err);
-    return window.location.origin + '/';
-  }
-}
-
-// Initialize BASE_URL - will be updated after IP detection
-getLocalNetworkUrl().then(url => {
-  BASE_URL = url;
-  console.log('Network URL detected:', BASE_URL);
-});
+// Base URL for shortened links
+const BASE_URL = window.location.origin + '/';
 
 // Initialize the app
 function initApp() {
@@ -100,11 +50,6 @@ function initApp() {
 
   // Update links list if we're on the My Links page
   updateLinksList();
-
-  // Make sure advanced options are hidden initially
-  if (advancedOptions) {
-    advancedOptions.style.display = 'none';
-  }
 }
 
 // Set up event listeners
@@ -132,27 +77,37 @@ function setupEventListeners() {
     e.preventDefault();
     showMyLinks();
   });
+
+  // About link navigation
+  document.querySelector('.main-nav a[href="#about"]').addEventListener('click', (e) => {
+    e.preventDefault();
+    showAboutSection();
+  });
+
+  // Home link navigation
+  document.querySelector('.main-nav a:first-child').addEventListener('click', (e) => {
+    e.preventDefault();
+    hideMyLinks();
+  });
   
   // Clear all button
-  clearAllBtn.addEventListener('click', showClearAllModal);
+  clearAllBtn.addEventListener('click', () => {
+    showModal(clearAllModal);
+  });
   
   // Theme toggle
   themeToggle.addEventListener('click', toggleTheme);
   
   // Modal close buttons
   document.querySelectorAll('.modal-close, .modal-cancel').forEach(button => {
-    button.addEventListener('click', closeModals);
+    button.addEventListener('click', hideModals);
   });
   
   // Delete confirmation
-  document.querySelectorAll('#delete-modal .modal-confirm').forEach(button => {
-    button.addEventListener('click', confirmDelete);
-  });
+  document.querySelector('#delete-modal .modal-confirm').addEventListener('click', confirmDelete);
   
   // Clear all confirmation
-  document.querySelectorAll('#clear-all-modal .modal-confirm').forEach(button => {
-    button.addEventListener('click', confirmClearAll);
-  });
+  document.querySelector('#clear-all-modal .modal-confirm').addEventListener('click', confirmClearAll);
 }
 
 // Handle form submission
@@ -177,25 +132,25 @@ function handleFormSubmit(e) {
 function generateShortUrl(longUrl, customCode, expirationDays) {
   // Format the URL if needed
   const formattedUrl = formatUrl(longUrl);
-  
+
   // Check if custom code is provided and valid
   if (customCode && !isValidCode(customCode)) {
     showToast('Custom code can only contain letters, numbers, hyphens, and underscores', 'error');
     return;
   }
-  
+
   // Check if custom code is already in use
   if (customCode && isCodeTaken(customCode)) {
     showToast('This custom code is already in use', 'error');
     return;
   }
-  
+
   // Generate a unique code if no custom code is provided
   const urlCode = customCode || generateUniqueCode();
-  
-  // Create a shorter URL format - use the current BASE_URL which may be a local network URL
-  const shortUrl = `${BASE_URL}${urlCode}`;
-  
+
+  // Create a shorter URL format - use r.html for maximum brevity
+  const shortUrl = `${BASE_URL}r.html#${urlCode}`;
+
   // Calculate expiration date if provided
   let expiresAt = null;
   if (expirationDays > 0) {
@@ -248,8 +203,7 @@ function isValidUrl(url) {
 
 // Check if code is valid
 function isValidCode(code) {
-  // Allow codes as short as 2 characters
-  return /^[a-zA-Z0-9_-]{2,}$/.test(code);
+  return /^[a-zA-Z0-9_-]+$/.test(code);
 }
 
 // Check if code is already taken
@@ -259,35 +213,23 @@ function isCodeTaken(code) {
 }
 
 // Generate a unique code
-function generateUniqueCode(length = 3) {
-  // Characters to use for the random part (excluding similar looking characters)
-  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
-
-  let isUnique = false;
+function generateUniqueCode(length = 5) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let code;
 
-  while (!isUnique) {
-    // Generate random part
-    let randomPart = '';
+  do {
+    code = '';
     for (let i = 0; i < length; i++) {
-      randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-
-    // Create a short code
-    code = randomPart;
-
-    // Check if code is unique
-    if (!isCodeTaken(code)) {
-      isUnique = true;
-    }
-  }
+  } while (isCodeTaken(code));
 
   return code;
 }
 
 // Generate a unique ID
 function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }
 
 // Save link to localStorage
@@ -303,7 +245,13 @@ function getLinks() {
   return linksJson ? JSON.parse(linksJson) : [];
 }
 
-// Update link in localStorage
+// Get a link by code
+function getLinkByCode(code) {
+  const links = getLinks();
+  return links.find(link => link.urlCode === code);
+}
+
+// Update a link
 function updateLink(linkObj) {
   const links = getLinks();
   const index = links.findIndex(link => link.id === linkObj.id);
@@ -314,22 +262,19 @@ function updateLink(linkObj) {
   }
 }
 
-// Delete link from localStorage
+// Delete a link
 function deleteLink(id) {
+  console.log('Deleting link with ID:', id);
   const links = getLinks();
+  console.log('Before delete - Links count:', links.length);
   const filteredLinks = links.filter(link => link.id !== id);
+  console.log('After delete - Links count:', filteredLinks.length);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredLinks));
-  
-  // Update the links list
-  updateLinksList();
 }
 
-// Clear all links from localStorage
+// Clear all links
 function clearAllLinks() {
   localStorage.removeItem(STORAGE_KEY);
-  
-  // Update the links list
-  updateLinksList();
 }
 
 // Show the result
@@ -337,93 +282,30 @@ function showResult(linkObj) {
   // Hide the form and show the result
   shortenerFormContainer.classList.add('hidden');
   resultContainer.classList.remove('hidden');
-
+  
   // Set the short URL
   shortUrlLink.href = linkObj.shortUrl;
   shortUrlLink.textContent = linkObj.shortUrl;
-
-  // Show network sharing info
-  showNetworkSharingInfo(linkObj.urlCode);
 }
 
-// Show network sharing information
-function showNetworkSharingInfo(urlCode) {
-  // Check if network sharing container exists
-  let networkContainer = document.getElementById('network-sharing-container');
-
-  // If it doesn't exist, create it
-  if (!networkContainer) {
-    networkContainer = document.createElement('div');
-    networkContainer.id = 'network-sharing-container';
-    networkContainer.className = 'network-sharing-container';
-
-    // Add it after the short URL display
-    const shortUrlDisplay = document.querySelector('.short-url-display');
-    shortUrlDisplay.parentNode.insertBefore(networkContainer, shortUrlDisplay.nextSibling);
-  }
-
-  // Get the local IP address for sharing
-  getLocalNetworkUrl().then(localUrl => {
-    const networkUrl = `${localUrl}${urlCode}`;
-
-    // Update the network container content
-    networkContainer.innerHTML = `
-      <div class="network-sharing-header">
-        <i class="fas fa-network-wired"></i>
-        <h3>Local Network Sharing</h3>
-      </div>
-      <p class="network-sharing-info">Share this link with others on your network:</p>
-      <div class="network-url-display">
-        <a href="${networkUrl}" target="_blank" rel="noopener noreferrer">${networkUrl}</a>
-        <button class="btn btn-icon" onclick="copyToClipboard('${networkUrl}')">
-          <i class="fas fa-copy"></i>
-        </button>
-      </div>
-      <p class="network-sharing-note">Anyone on your local network can access this link</p>
-    `;
-  });
-}
-
-// Generate QR code using qrcode.js library
+// Generate QR code
 function generateQRCode(url) {
   // Clear previous QR code
   qrCodeContainer.innerHTML = '';
-
+  
   // Check if QRCode library is available
   if (typeof QRCode !== 'undefined') {
     try {
-      // Create a new QRCode instance
+      // Generate QR code
       new QRCode(qrCodeContainer, {
         text: url,
         width: 180,
         height: 180,
-        colorDark: "#4f46e5", // Use our primary color
-        colorLight: "#ffffff",
+        colorDark: '#4f46e5',
+        colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H
       });
-
-      // Add download button
-      const downloadBtn = document.createElement('div');
-      downloadBtn.className = 'qr-download';
-      downloadBtn.innerHTML = `<button class="btn btn-secondary btn-sm">
-        <i class="fas fa-download"></i> Download QR
-      </button>`;
-      qrCodeContainer.parentNode.appendChild(downloadBtn);
-
-      // Add event listener to download button
-      downloadBtn.querySelector('button').addEventListener('click', () => {
-        // Create a canvas from the QR code
-        const canvas = qrCodeContainer.querySelector('canvas');
-        if (canvas) {
-          const link = document.createElement('a');
-          link.download = 'qrcode.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-        } else {
-          showToast('Could not download QR code', 'error');
-        }
-      });
-
+      
       console.log('QR code generated using qrcode.js library');
     } catch (e) {
       console.error('Error generating QR code with qrcode.js:', e);
@@ -439,40 +321,21 @@ function generateQRCode(url) {
 function fallbackQRCode(url, container, size = 180) {
   // If no container is provided, use the main QR code container
   const targetContainer = container || qrCodeContainer;
-
+  
   // Create an image element
   const img = document.createElement('img');
-
+  
   // Set the source to Google Charts API with our primary color
   img.src = `https://chart.googleapis.com/chart?cht=qr&chl=${encodeURIComponent(url)}&chs=${size}x${size}&chld=H|0&chco=4F46E5`;
-
+  
   // Set alt text and styling
   img.alt = 'QR Code for ' + url;
   img.className = 'qr-image';
-
+  
   // Add the image to the container
   targetContainer.innerHTML = '';
   targetContainer.appendChild(img);
-
-  // Add download button
-  if (targetContainer === qrCodeContainer) {
-    const downloadBtn = document.createElement('div');
-    downloadBtn.className = 'qr-download';
-    downloadBtn.innerHTML = `<button class="btn btn-secondary btn-sm">
-      <i class="fas fa-download"></i> Download QR
-    </button>`;
-    targetContainer.parentNode.appendChild(downloadBtn);
-
-    // Add event listener to download button
-    downloadBtn.querySelector('button').addEventListener('click', () => {
-      // Create a temporary link to download the image
-      const link = document.createElement('a');
-      link.download = 'qrcode.png';
-      link.href = img.src;
-      link.click();
-    });
-  }
-
+  
   console.log('QR code generated using Google Charts API (fallback)');
 }
 
@@ -480,15 +343,15 @@ function fallbackQRCode(url, container, size = 180) {
 function resetForm() {
   // Clear inputs
   urlForm.reset();
-
+  
   // Hide advanced options
   advancedOptions.style.display = 'none';
   advancedToggle.innerHTML = '<i class="fas fa-cog"></i> Advanced options';
-
+  
   // Hide result and show form
   resultContainer.classList.add('hidden');
   shortenerFormContainer.classList.remove('hidden');
-
+  
   // Focus on long URL input
   longUrlInput.focus();
 }
@@ -549,19 +412,20 @@ function showMyLinks() {
   document.querySelector('.url-shortener').classList.add('hidden');
   document.querySelector('.features').classList.add('hidden');
   document.querySelector('.about').classList.add('hidden');
-  
+  document.querySelector('.social-proof').classList.add('hidden');
+
   // Show My Links section
   myLinksSection.classList.remove('hidden');
-  
+
   // Update links list
   updateLinksList();
-  
+
   // Update navigation
   document.querySelectorAll('.main-nav a').forEach(link => {
     link.classList.remove('active');
   });
   myLinksNav.classList.add('active');
-  
+
   // Scroll to top
   window.scrollTo(0, 0);
 }
@@ -572,58 +436,82 @@ function hideMyLinks() {
   document.querySelector('.url-shortener').classList.remove('hidden');
   document.querySelector('.features').classList.remove('hidden');
   document.querySelector('.about').classList.remove('hidden');
-  
+  document.querySelector('.social-proof').classList.remove('hidden');
+
   // Hide My Links section
   myLinksSection.classList.add('hidden');
-  
+
   // Update navigation
   document.querySelectorAll('.main-nav a').forEach(link => {
     link.classList.remove('active');
   });
   document.querySelector('.main-nav a:first-child').classList.add('active');
-  
+
   // Reset form
   resetForm();
 }
 
+// Show About section
+function showAboutSection() {
+  // Show the about section and hide others
+  document.querySelector('.url-shortener').classList.add('hidden');
+  document.querySelector('.features').classList.add('hidden');
+  document.querySelector('.social-proof').classList.add('hidden');
+  document.querySelector('.about').classList.remove('hidden');
+
+  // Hide My Links section
+  myLinksSection.classList.add('hidden');
+
+  // Update navigation
+  document.querySelectorAll('.main-nav a').forEach(link => {
+    link.classList.remove('active');
+  });
+  document.querySelector('.main-nav a[href="#about"]').classList.add('active');
+
+  // Scroll to the about section
+  document.querySelector('#about').scrollIntoView({ behavior: 'smooth' });
+}
+
 // Update links list
 function updateLinksList() {
+  console.log('Updating links list');
   // Get all links
   const links = getLinks();
-  
+  console.log('Total links:', links.length);
+
   // Clear the list
   linksList.innerHTML = '';
-  
+
   // Check if there are any links
   if (links.length === 0) {
+    console.log('No links found, showing empty state');
     linksList.classList.add('hidden');
     emptyLinks.classList.remove('hidden');
     return;
   }
-  
+
   // Show the list and hide empty state
   linksList.classList.remove('hidden');
   emptyLinks.classList.add('hidden');
-  
+
   // Remove expired links
   const now = new Date();
   const validLinks = links.filter(link => {
     if (link.expiresAt) {
-      return new Date(link.expiresAt) > now;
+      const expiryDate = new Date(link.expiresAt);
+      return expiryDate > now;
     }
     return true;
   });
-  
-  // If we removed any links, update localStorage
-  if (validLinks.length !== links.length) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(validLinks));
-  }
-  
+
+  console.log('Valid links after expiry check:', validLinks.length);
+
   // Sort links by creation date (newest first)
   validLinks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
+
   // Add links to the list
   validLinks.forEach(link => {
+    console.log('Adding link to list:', link.id, link.shortUrl);
     const linkItem = createLinkItem(link);
     linksList.appendChild(linkItem);
   });
@@ -637,63 +525,107 @@ function createLinkItem(link) {
   
   // Format dates
   const createdDate = new Date(link.createdAt);
-  const formattedCreatedDate = createdDate.toLocaleDateString() + ' ' + createdDate.toLocaleTimeString();
+  const formattedCreatedDate = createdDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
   
-  let expiresText = 'Never expires';
+  // Format expiry date if exists
+  let expiryInfo = 'Never expires';
   if (link.expiresAt) {
-    const expiresDate = new Date(link.expiresAt);
-    expiresText = `Expires: ${expiresDate.toLocaleDateString()}`;
+    const expiryDate = new Date(link.expiresAt);
+    const formattedExpiryDate = expiryDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+    expiryInfo = `Expires on ${formattedExpiryDate}`;
   }
   
-  // Create link item HTML
+  // Format last clicked date if exists
+  let lastClickedInfo = 'Never clicked';
+  if (link.lastClickedAt) {
+    const lastClickedDate = new Date(link.lastClickedAt);
+    const formattedLastClickedDate = lastClickedDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    lastClickedInfo = `Last clicked on ${formattedLastClickedDate}`;
+  }
+  
   linkItem.innerHTML = `
-    <div class="link-details">
-      <div class="link-short">
-        <a href="${link.shortUrl}" target="_blank" rel="noopener noreferrer">${link.shortUrl}</a>
+    <div class="link-info">
+      <div class="link-main">
+        <div class="link-original">
+          <span class="link-label">Original URL:</span>
+          <a href="${link.longUrl}" target="_blank" rel="noopener noreferrer" class="link-url">${truncateUrl(link.longUrl, 50)}</a>
+        </div>
+        <div class="link-short">
+          <span class="link-label">Short URL:</span>
+          <a href="${link.shortUrl}" target="_blank" rel="noopener noreferrer" class="link-url">${link.shortUrl}</a>
+          <button class="icon-button copy-link-btn" title="Copy to clipboard">
+            <i class="fas fa-copy"></i>
+          </button>
+          <button class="icon-button qr-link-btn" title="Show QR code">
+            <i class="fas fa-qrcode"></i>
+          </button>
+        </div>
       </div>
-      <div class="link-original" title="${link.longUrl}">${link.longUrl}</div>
       <div class="link-meta">
         <div class="link-meta-item">
-          <i class="fas fa-calendar"></i>
-          <span>${formattedCreatedDate}</span>
+          <i class="fas fa-calendar-alt"></i>
+          <span>Created on ${formattedCreatedDate}</span>
         </div>
         <div class="link-meta-item">
           <i class="fas fa-clock"></i>
-          <span>${expiresText}</span>
+          <span>${expiryInfo}</span>
+        </div>
+        <div class="link-meta-item">
+          <i class="fas fa-chart-line"></i>
+          <span>${link.clicks} clicks</span>
         </div>
         <div class="link-meta-item">
           <i class="fas fa-mouse-pointer"></i>
-          <span>${link.clicks} clicks</span>
+          <span>${lastClickedInfo}</span>
         </div>
       </div>
     </div>
     <div class="link-actions">
-      <button class="btn btn-sm btn-secondary copy-link" title="Copy link">
-        <i class="fas fa-copy"></i>
-      </button>
-      <button class="btn btn-sm btn-secondary qr-link" title="Show QR code">
-        <i class="fas fa-qrcode"></i>
-      </button>
-      <button class="btn btn-sm btn-danger delete-link" title="Delete link">
-        <i class="fas fa-trash"></i>
+      <div class="qr-preview"></div>
+      <button class="btn btn-danger btn-sm delete-link-btn">
+        <i class="fas fa-trash"></i> Delete
       </button>
     </div>
   `;
   
   // Add event listeners
-  linkItem.querySelector('.copy-link').addEventListener('click', () => {
+  const copyBtn = linkItem.querySelector('.copy-link-btn');
+  copyBtn.addEventListener('click', () => {
     copyLinkToClipboard(link.shortUrl);
   });
   
-  linkItem.querySelector('.qr-link').addEventListener('click', () => {
-    showQRModal(link);
+  const qrBtn = linkItem.querySelector('.qr-link-btn');
+  const qrPreview = linkItem.querySelector('.qr-preview');
+  qrBtn.addEventListener('click', () => {
+    toggleQRPreview(qrPreview, link.shortUrl);
   });
   
-  linkItem.querySelector('.delete-link').addEventListener('click', () => {
+  const deleteBtn = linkItem.querySelector('.delete-link-btn');
+  deleteBtn.addEventListener('click', () => {
     showDeleteModal(link.id);
   });
   
   return linkItem;
+}
+
+// Truncate URL for display
+function truncateUrl(url, maxLength) {
+  if (url.length <= maxLength) return url;
+  return url.substring(0, maxLength) + '...';
 }
 
 // Copy link to clipboard
@@ -708,7 +640,7 @@ function copyLinkToClipboard(url) {
         showToast('Failed to copy to clipboard', 'error');
       });
   } else {
-    // Fallback for older browsers
+    // Fallback
     const textarea = document.createElement('textarea');
     textarea.value = url;
     textarea.style.position = 'fixed';
@@ -731,232 +663,167 @@ function copyLinkToClipboard(url) {
   }
 }
 
-// Show QR modal
-function showQRModal(link) {
-  // Create modal
-  const modal = document.createElement('div');
-  modal.className = 'modal active';
-
-  modal.innerHTML = `
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">QR Code</h3>
-        <button class="modal-close" aria-label="Close modal">&times;</button>
-      </div>
-      <div class="modal-body text-center">
-        <div class="qr-container">
-          <p class="qr-label">Scan to visit</p>
-          <div id="qr-modal-code" class="qr-code"></div>
-          <div class="qr-url">${link.shortUrl}</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary modal-close">Close</button>
-        <button class="btn btn-primary" id="download-qr-modal">
-          <i class="fas fa-download"></i> Download
-        </button>
-      </div>
-    </div>
-  `;
-
-  // Add to body
-  document.body.appendChild(modal);
-
-  // Generate QR code for the modal
-  const qrModalContainer = modal.querySelector('#qr-modal-code');
-
-  // Check if QRCode library is available
-  if (typeof QRCode !== 'undefined') {
-    try {
-      // Create a new QRCode instance
-      new QRCode(qrModalContainer, {
-        text: link.shortUrl,
-        width: 200,
-        height: 200,
-        colorDark: "#4f46e5", // Use our primary color
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-
-      console.log('Modal QR code generated using qrcode.js library');
-
-      // Add download functionality
-      const downloadBtn = modal.querySelector('#download-qr-modal');
-      downloadBtn.addEventListener('click', () => {
-        const canvas = qrModalContainer.querySelector('canvas');
-        if (canvas) {
-          const link = document.createElement('a');
-          link.download = 'qrcode.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-        } else {
-          showToast('Could not download QR code', 'error');
-        }
-      });
-    } catch (e) {
-      console.error('Error generating modal QR code with qrcode.js:', e);
-
-      // Fallback to Google Charts API
-      fallbackQRCode(link.shortUrl, qrModalContainer, 200);
-
-      // Add download functionality for fallback
-      const downloadBtn = modal.querySelector('#download-qr-modal');
-      downloadBtn.addEventListener('click', () => {
-        const img = qrModalContainer.querySelector('img');
-        if (img) {
-          const link = document.createElement('a');
-          link.download = 'qrcode.png';
-          link.href = img.src;
-          link.click();
-        } else {
-          showToast('Could not download QR code', 'error');
-        }
-      });
-    }
+// Toggle QR code preview
+function toggleQRPreview(container, url) {
+  if (container.innerHTML === '') {
+    // Generate QR code
+    fallbackQRCode(url, container, 120);
+    container.style.display = 'block';
   } else {
-    // Fallback to Google Charts API
-    fallbackQRCode(link.shortUrl, qrModalContainer, 200);
-
-    // Add download functionality for fallback
-    const downloadBtn = modal.querySelector('#download-qr-modal');
-    downloadBtn.addEventListener('click', () => {
-      const img = qrModalContainer.querySelector('img');
-      if (img) {
-        const link = document.createElement('a');
-        link.download = 'qrcode.png';
-        link.href = img.src;
-        link.click();
-      } else {
-        showToast('Could not download QR code', 'error');
-      }
-    });
+    // Hide QR code
+    container.innerHTML = '';
+    container.style.display = 'none';
   }
-
-  // Add event listeners
-  modal.querySelectorAll('.modal-close').forEach(button => {
-    button.addEventListener('click', () => {
-      document.body.removeChild(modal);
-    });
-  });
-
-  // Close on click outside
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      document.body.removeChild(modal);
-    }
-  });
 }
 
 // Show delete modal
 function showDeleteModal(id) {
+  console.log('Showing delete modal for ID:', id);
   currentLinkToDelete = id;
-  deleteModal.classList.add('active');
-}
-
-// Show clear all modal
-function showClearAllModal() {
-  clearAllModal.classList.add('active');
-}
-
-// Close all modals
-function closeModals() {
-  deleteModal.classList.remove('active');
-  clearAllModal.classList.remove('active');
-  currentLinkToDelete = null;
+  showModal(deleteModal);
 }
 
 // Confirm delete
 function confirmDelete() {
+  console.log('Confirming delete for ID:', currentLinkToDelete);
   if (currentLinkToDelete) {
     deleteLink(currentLinkToDelete);
+    updateLinksList();
+    hideModals();
     showToast('Link deleted successfully', 'success');
+    currentLinkToDelete = null;
+  } else {
+    console.error('No link ID to delete');
   }
-  closeModals();
 }
 
 // Confirm clear all
 function confirmClearAll() {
   clearAllLinks();
+  updateLinksList();
+  hideModals();
   showToast('All links cleared successfully', 'success');
-  closeModals();
+}
+
+// Show modal
+function showModal(modal) {
+  modal.style.display = 'flex';
+  setTimeout(() => {
+    modal.classList.add('show');
+  }, 10);
+}
+
+// Hide all modals
+function hideModals() {
+  document.querySelectorAll('.modal').forEach(modal => {
+    modal.classList.remove('show');
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+  });
+}
+
+// Check for redirect
+function checkForRedirect() {
+  // We're now using redirect.html with hash-based routing
+  // This function is kept for compatibility but doesn't need to do anything
+  console.log('Using hash-based redirection through redirect.html');
 }
 
 // Show toast notification
 function showToast(message, type = 'info') {
+  // Create toast element
   const toast = document.createElement('div');
-  toast.className = `toast toast-${type}`;
-  
+  toast.className = `toast ${type}`;
+
+  // Set icon based on type
   let icon = 'info-circle';
   if (type === 'success') icon = 'check-circle';
   if (type === 'error') icon = 'exclamation-circle';
   if (type === 'warning') icon = 'exclamation-triangle';
-  
+
+  // Set content
   toast.innerHTML = `
     <div class="toast-icon">
       <i class="fas fa-${icon}"></i>
     </div>
     <div class="toast-message">${message}</div>
   `;
-  
+
+  // Add to container
   toastContainer.appendChild(toast);
-  
-  // Remove toast after 3 seconds
+
+  // Remove after 3 seconds
   setTimeout(() => {
-    toast.remove();
+    toast.classList.add('fadeOut');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.remove();
+      }
+    }, 300);
   }, 3000);
 }
 
-// Initialize theme
-function initTheme() {
-  // Check for saved theme preference
-  const savedTheme = localStorage.getItem('theme');
-  
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
-  } else {
-    // Check system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      updateThemeIcon('dark');
-    }
-  }
-}
-
-// Toggle theme
+// Theme is always dark
 function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-  
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  
-  updateThemeIcon(newTheme);
+  // No toggling - always dark
+  document.body.classList.add('dark-mode');
+  themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+  localStorage.setItem('theme', 'dark');
 }
 
-// Update theme icon
-function updateThemeIcon(theme) {
-  const icon = themeToggle.querySelector('i');
-  
-  if (theme === 'dark') {
-    icon.className = 'fas fa-sun';
-  } else {
-    icon.className = 'fas fa-moon';
-  }
-}
-
-// Check if we need to redirect (if this is a shortened URL)
-function checkForRedirect() {
-  // Get the URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-
-  // If there's a code parameter, redirect to the redirect.html page
-  if (code) {
-    console.log('Found code parameter on main page, redirecting to redirect.html');
-    window.location.href = `redirect.html?code=${code}`;
-  }
+// Initialize theme - always dark
+function initTheme() {
+  document.body.classList.add('dark-mode');
+  themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+  localStorage.setItem('theme', 'dark');
 }
 
 // Initialize the app when the DOM is loaded
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', function() {
+  initApp();
+  initCountdown();
+});
+
+// Initialize countdown timer for the limited offer
+function initCountdown() {
+  const daysElement = document.getElementById('countdown-days');
+  const hoursElement = document.getElementById('countdown-hours');
+  const minutesElement = document.getElementById('countdown-minutes');
+
+  if (!daysElement || !hoursElement || !minutesElement) return;
+
+  // Update the countdown every minute
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+
+  function updateCountdown() {
+    // Randomly decrease the time to create urgency
+    let days = parseInt(daysElement.textContent);
+    let hours = parseInt(hoursElement.textContent);
+    let minutes = parseInt(minutesElement.textContent);
+
+    minutes -= Math.floor(Math.random() * 5) + 1;
+
+    if (minutes < 0) {
+      minutes += 60;
+      hours--;
+    }
+
+    if (hours < 0) {
+      hours += 24;
+      days--;
+    }
+
+    // Don't let it go below 0
+    if (days < 0) {
+      days = 0;
+      hours = 0;
+      minutes = 0;
+    }
+
+    daysElement.textContent = days;
+    hoursElement.textContent = hours < 10 ? '0' + hours : hours;
+    minutesElement.textContent = minutes < 10 ? '0' + minutes : minutes;
+  }
+}

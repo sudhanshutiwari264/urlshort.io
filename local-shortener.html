@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local URL Shortener</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    h1 {
+      color: #4f46e5;
+      text-align: center;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #4338ca;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f0f9ff;
+      border-radius: 4px;
+      border: 1px solid #e0e7ff;
+    }
+    .links-list {
+      margin-top: 30px;
+    }
+    .link-item {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    .redirect-container {
+      text-align: center;
+      padding: 30px;
+      background-color: #f0f9ff;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    .countdown {
+      font-size: 24px;
+      font-weight: bold;
+      color: #4f46e5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Local URL Shortener</h1>
+    
+    <div id="main-content">
+      <!-- Create URL Form -->
+      <div id="create-form">
+        <h2>Create Short URL</h2>
+        <div class="form-group">
+          <label for="long-url">Long URL:</label>
+          <input type="url" id="long-url" placeholder="https://example.com">
+        </div>
+        <div class="form-group">
+          <label for="custom-code">Custom Code (optional):</label>
+          <input type="text" id="custom-code" placeholder="e.g., my-link">
+        </div>
+        <button id="create-btn">Create Short URL</button>
+        <div id="create-result" class="result" style="display: none;"></div>
+      </div>
+      
+      <!-- Links List -->
+      <div class="links-list">
+        <h2>My Links</h2>
+        <button id="refresh-btn">Refresh List</button>
+        <button id="clear-btn">Clear All Links</button>
+        <div id="links-list"></div>
+      </div>
+    </div>
+    
+    <!-- Redirect Container (shown when redirecting) -->
+    <div id="redirect-container" class="redirect-container" style="display: none;">
+      <h2>Redirecting you to:</h2>
+      <p id="destination-url"></p>
+      <p>You will be redirected in <span id="countdown" class="countdown">3</span> seconds.</p>
+      <p>If you are not redirected automatically, <a id="manual-link" href="#">click here</a>.</p>
+    </div>
+  </div>
+
+  <script>
+    // Constants
+    const STORAGE_KEY = 'local_url_shortener_links';
+    
+    // DOM Elements
+    const longUrlInput = document.getElementById('long-url');
+    const customCodeInput = document.getElementById('custom-code');
+    const createBtn = document.getElementById('create-btn');
+    const createResult = document.getElementById('create-result');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const linksList = document.getElementById('links-list');
+    const mainContent = document.getElementById('main-content');
+    const redirectContainer = document.getElementById('redirect-container');
+    const destinationUrl = document.getElementById('destination-url');
+    const countdown = document.getElementById('countdown');
+    const manualLink = document.getElementById('manual-link');
+    
+    // Event Listeners
+    createBtn.addEventListener('click', handleCreateClick);
+    refreshBtn.addEventListener('click', displayLinks);
+    clearBtn.addEventListener('click', clearAllLinks);
+    
+    // Initialize
+    function init() {
+      console.log('Initializing app...');
+      
+      // Check if this is a redirect request
+      const hash = window.location.hash;
+      if (hash && hash.length > 1) {
+        const code = hash.substring(1);
+        console.log('Found code in hash:', code);
+        handleRedirect(code);
+      } else {
+        console.log('No redirect code found, showing main content');
+        displayLinks();
+      }
+    }
+    
+    // Handle Create Button Click
+    function handleCreateClick() {
+      const longUrl = longUrlInput.value.trim();
+      const customCode = customCodeInput.value.trim();
+      
+      if (!longUrl) {
+        showCreateResult('Please enter a long URL');
+        return;
+      }
+      
+      if (!isValidUrl(longUrl)) {
+        showCreateResult('Please enter a valid URL');
+        return;
+      }
+      
+      if (customCode && !isValidCode(customCode)) {
+        showCreateResult('Custom code can only contain letters, numbers, hyphens, and underscores');
+        return;
+      }
+      
+      createShortUrl(longUrl, customCode);
+    }
+    
+    // Create Short URL
+    function createShortUrl(longUrl, customCode) {
+      // Format URL if needed
+      const formattedUrl = formatUrl(longUrl);
+      
+      // Generate a unique code if no custom code is provided
+      const urlCode = customCode || generateUniqueCode();
+      
+      // Check if code is already taken
+      if (isCodeTaken(urlCode)) {
+        showCreateResult('This code is already in use. Please choose another one.');
+        return;
+      }
+      
+      // Create the short URL using the current page with hash
+      const shortUrl = window.location.href.split('#')[0] + '#' + urlCode;
+      
+      // Create link object
+      const linkObj = {
+        id: generateId(),
+        urlCode: urlCode,
+        longUrl: formattedUrl,
+        shortUrl: shortUrl,
+        createdAt: new Date().toISOString(),
+        clicks: 0,
+        lastClickedAt: null
+      };
+      
+      // Save to localStorage
+      saveLink(linkObj);
+      
+      // Show result
+      showCreateResult(`
+        <p>Your shortened URL is ready!</p>
+        <p><a href="${linkObj.shortUrl}" target="_blank">${linkObj.shortUrl}</a></p>
+        <button onclick="copyToClipboard('${linkObj.shortUrl}')">Copy to Clipboard</button>
+      `);
+      
+      // Clear inputs
+      longUrlInput.value = '';
+      customCodeInput.value = '';
+      
+      // Refresh links list
+      displayLinks();
+    }
+    
+    // Handle Redirect
+    function handleRedirect(code) {
+      console.log('Handling redirect for code:', code);
+      
+      // Get links from localStorage
+      const links = getLinks();
+      console.log('Found', links.length, 'links in storage');
+      
+      // Find the link with this code
+      let link = links.find(link => link.urlCode === code);
+      
+      // Try case-insensitive match if not found
+      if (!link) {
+        link = links.find(link => link.urlCode.toLowerCase() === code.toLowerCase());
+      }
+      
+      if (!link) {
+        console.log('No link found for code:', code);
+        alert('No link found for code: ' + code);
+        return;
+      }
+      
+      console.log('Found link:', link);
+      
+      // Update click count
+      link.clicks = (link.clicks || 0) + 1;
+      link.lastClickedAt = new Date().toISOString();
+      
+      // Save updated link back to localStorage
+      updateLink(link);
+      
+      // Show redirect info
+      showRedirectInfo(link);
+    }
+    
+    // Show Redirect Info
+    function showRedirectInfo(link) {
+      // Hide main content
+      mainContent.style.display = 'none';
+      
+      // Show redirect container
+      redirectContainer.style.display = 'block';
+      
+      // Set destination URL
+      destinationUrl.textContent = link.longUrl;
+      manualLink.href = link.longUrl;
+      
+      // Start countdown
+      let count = 3;
+      countdown.textContent = count;
+      
+      const countdownInterval = setInterval(() => {
+        count--;
+        countdown.textContent = count;
+        
+        if (count <= 0) {
+          clearInterval(countdownInterval);
+          window.location.href = link.longUrl;
+        }
+      }, 1000);
+    }
+    
+    // Display Links
+    function displayLinks() {
+      const links = getLinks();
+      
+      if (links.length === 0) {
+        linksList.innerHTML = '<p>You have no saved links yet.</p>';
+        return;
+      }
+      
+      // Sort links by creation date (newest first)
+      links.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      let html = '';
+      links.forEach(link => {
+        const createdDate = new Date(link.createdAt).toLocaleString();
+        const lastClickedDate = link.lastClickedAt ? new Date(link.lastClickedAt).toLocaleString() : 'Never';
+        
+        html += `
+          <div class="link-item">
+            <div><strong>Short URL:</strong> <a href="${link.shortUrl}" target="_blank">${link.shortUrl}</a></div>
+            <div><strong>Long URL:</strong> ${link.longUrl}</div>
+            <div><strong>Created:</strong> ${createdDate} | <strong>Clicks:</strong> ${link.clicks || 0} | <strong>Last clicked:</strong> ${lastClickedDate}</div>
+            <div style="margin-top: 10px;">
+              <button onclick="copyToClipboard('${link.shortUrl}')">Copy URL</button>
+              <button onclick="deleteLink('${link.id}')">Delete</button>
+              <button onclick="testLink('${link.urlCode}')">Test</button>
+            </div>
+          </div>
+        `;
+      });
+      
+      linksList.innerHTML = html;
+    }
+    
+    // Show Create Result
+    function showCreateResult(message) {
+      createResult.style.display = 'block';
+      createResult.innerHTML = message;
+    }
+    
+    // Clear All Links
+    function clearAllLinks() {
+      if (confirm('Are you sure you want to delete all your links?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        displayLinks();
+      }
+    }
+    
+    // Helper Functions
+    function isValidUrl(url) {
+      try {
+        new URL(formatUrl(url));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    
+    function formatUrl(url) {
+      if (!/^https?:\/\//i.test(url)) {
+        return 'https://' + url;
+      }
+      return url;
+    }
+    
+    function isValidCode(code) {
+      return /^[a-zA-Z0-9_-]+$/.test(code);
+    }
+    
+    function isCodeTaken(code) {
+      const links = getLinks();
+      return links.some(link => link.urlCode.toLowerCase() === code.toLowerCase());
+    }
+    
+    function generateUniqueCode(length = 6) {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let code;
+      
+      do {
+        code = '';
+        for (let i = 0; i < length; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+      } while (isCodeTaken(code));
+      
+      return code;
+    }
+    
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substring(2);
+    }
+    
+    function getLinks() {
+      const linksJson = localStorage.getItem(STORAGE_KEY);
+      return linksJson ? JSON.parse(linksJson) : [];
+    }
+    
+    function saveLink(linkObj) {
+      const links = getLinks();
+      links.push(linkObj);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(links));
+    }
+    
+    function updateLink(linkObj) {
+      const links = getLinks();
+      const index = links.findIndex(link => link.id === linkObj.id);
+      
+      if (index !== -1) {
+        links[index] = linkObj;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(links));
+      }
+    }
+    
+    function deleteLink(id) {
+      const links = getLinks();
+      const filteredLinks = links.filter(link => link.id !== id);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredLinks));
+      displayLinks();
+    }
+    
+    function testLink(code) {
+      window.open(window.location.href.split('#')[0] + '#' + code, '_blank');
+    }
+    
+    function copyToClipboard(text) {
+      const tempInput = document.createElement('input');
+      tempInput.value = text;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      alert('Copied to clipboard!');
+    }
+    
+    // Initialize the app
+    window.addEventListener('load', init);
+    
+    // Handle hash changes (for SPA-like behavior)
+    window.addEventListener('hashchange', function() {
+      const hash = window.location.hash;
+      if (hash && hash.length > 1) {
+        const code = hash.substring(1);
+        handleRedirect(code);
+      } else {
+        // Show main content if hash is empty
+        mainContent.style.display = 'block';
+        redirectContainer.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

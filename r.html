@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <style>
+    :root {
+      --primary-color: #4f46e5;
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f9fafb;
+      --text-secondary: #d1d5db;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .redirect-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+      background-color: var(--bg-primary);
+    }
+
+    .redirect-icon {
+      font-size: 4rem;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    .redirect-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+    }
+
+    .redirect-url {
+      word-break: break-all;
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: var(--bg-secondary);
+      border-radius: 8px;
+      max-width: 100%;
+      color: var(--text-primary);
+    }
+
+    .redirect-progress {
+      width: 100%;
+      max-width: 300px;
+      height: 6px;
+      background-color: var(--bg-secondary);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .redirect-progress-bar {
+      height: 100%;
+      background-color: var(--primary-color);
+      width: 0%;
+      transition: width 3s linear;
+    }
+
+    .redirect-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="redirect-container">
+    <div class="redirect-icon">
+      <i class="fas fa-arrow-right-long"></i>
+    </div>
+    <h1 class="redirect-title">Redirecting you...</h1>
+    <div class="redirect-url" id="destination-url">Loading...</div>
+    <div class="redirect-progress">
+      <div class="redirect-progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="redirect-actions">
+      <button id="redirect-now" class="btn">Go Now</button>
+      <a href="index.html" class="btn btn-secondary">Cancel</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize theme
+      initTheme();
+
+      // Handle redirection
+      handleRedirect();
+
+      // Always use dark theme
+      function initTheme() {
+        // Dark theme is now the default
+        localStorage.setItem('theme', 'dark');
+      }
+
+      // Handle the redirect process
+      function handleRedirect() {
+        const urlHash = window.location.hash;
+        const code = urlHash.substring(1);
+
+        const destinationUrlElement = document.getElementById('destination-url');
+        const progressBar = document.getElementById('progress-bar');
+        const redirectNowButton = document.getElementById('redirect-now');
+
+        setTimeout(() => {
+          progressBar.style.width = '100%';
+        }, 100);
+
+        if (!code) {
+          destinationUrlElement.textContent = 'Invalid URL code';
+          return;
+        }
+
+        const linksJson = localStorage.getItem('url2025_links');
+        const links = linksJson ? JSON.parse(linksJson) : [];
+
+        const link = links.find(link => link.urlCode === code);
+
+        if (!link) {
+          destinationUrlElement.textContent = 'Invalid or expired URL';
+          return;
+        }
+
+        destinationUrlElement.textContent = link.longUrl;
+
+        link.clicks += 1;
+        link.lastClickedAt = new Date().toISOString();
+
+        const updatedLinks = links.map(l => l.id === link.id ? link : l);
+        localStorage.setItem('url2025_links', JSON.stringify(updatedLinks));
+
+        let redirectTimeout = setTimeout(() => {
+          window.location.href = link.longUrl;
+        }, 3000);
+
+        redirectNowButton.addEventListener('click', function() {
+          clearTimeout(redirectTimeout);
+          window.location.href = link.longUrl;
+        });
+      }
+    });
+  </script>
+</body>
+</html>

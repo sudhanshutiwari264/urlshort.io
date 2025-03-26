@@ -304,6 +304,57 @@ select:focus {
   margin-top: var(--spacing-xl);
 }
 
+/* Text Button */
+.text-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+}
+
+.text-button:hover {
+  color: var(--primary-hover);
+  background-color: var(--primary-bg);
+}
+
+.text-button i {
+  transition: transform var(--transition-fast);
+}
+
+.text-button:hover i {
+  transform: rotate(90deg);
+}
+
+/* Advanced Options */
+#advanced-options {
+  background-color: var(--bg-lighter);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+#advanced-options h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-lg);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
 /* Cards */
 .card {
   background-color: var(--bg-color);
@@ -1373,6 +1424,26 @@ select:focus {
 
 .dark-mode .link-meta-item {
   background-color: rgba(51, 65, 85, 0.6);
+}
+
+/* Dark mode advanced options */
+.dark-mode #advanced-options {
+  background-color: var(--bg-light);
+  border-color: var(--border-color);
+}
+
+.dark-mode .text-button {
+  color: var(--primary-color);
+}
+
+.dark-mode .text-button:hover {
+  background-color: var(--primary-bg);
+  color: var(--primary-light);
+}
+
+.dark-mode .text-button:hover i {
+  transform: rotate(90deg);
+  color: var(--primary-light);
 }
 
 /* Network sharing container */
