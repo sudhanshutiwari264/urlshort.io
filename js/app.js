@@ -32,8 +32,60 @@ let currentLinkToDelete = null;
 
 // Constants
 const STORAGE_KEY = 'url2025_links';
-const BASE_URL = window.location.href.split('#')[0].split('?')[0];
 const CURRENT_YEAR = 2025; // Set to 2025 as requested
+
+// Get the base URL - support both local and remote access
+let BASE_URL = window.location.origin + '/'; // Default base URL
+
+// Function to get local network URL
+async function getLocalNetworkUrl() {
+  try {
+    // Try to get RTCPeerConnection to find local IP
+    const pc = new RTCPeerConnection({
+      iceServers: []
+    });
+
+    // Create a dummy data channel
+    pc.createDataChannel('');
+
+    // Create an offer to activate the ICE candidate gathering
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    // Wait for ICE gathering to complete
+    return new Promise((resolve) => {
+      pc.onicecandidate = (ice) => {
+        if (!ice || !ice.candidate || !ice.candidate.candidate) return;
+
+        // Extract IP address from ICE candidate
+        const localIpMatch = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(ice.candidate.candidate);
+        if (localIpMatch && localIpMatch[1]) {
+          const localIp = localIpMatch[1];
+          // Only use private network IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+          if (/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))/.test(localIp)) {
+            pc.onicecandidate = null;
+            pc.close();
+            resolve(`http://${localIp}:${window.location.port || '80'}/`);
+          }
+        }
+      };
+
+      // Fallback if no valid candidate is found within 1 second
+      setTimeout(() => {
+        resolve(window.location.origin + '/');
+      }, 1000);
+    });
+  } catch (err) {
+    console.error('Error getting local IP:', err);
+    return window.location.origin + '/';
+  }
+}
+
+// Initialize BASE_URL - will be updated after IP detection
+getLocalNetworkUrl().then(url => {
+  BASE_URL = url;
+  console.log('Network URL detected:', BASE_URL);
+});
 
 // Initialize the app
 function initApp() {
@@ -136,8 +188,8 @@ function generateShortUrl(longUrl, customCode, expirationDays) {
   // Generate a unique code if no custom code is provided
   const urlCode = customCode || generateUniqueCode();
   
-  // Create the short URL using the redirect.html page
-  const shortUrl = `${BASE_URL.replace(/index\.html$/, '')}redirect.html?code=${urlCode}`;
+  // Create a shorter URL format - use the current BASE_URL which may be a local network URL
+  const shortUrl = `${BASE_URL}${urlCode}`;
   
   // Calculate expiration date if provided
   let expiresAt = null;
@@ -191,7 +243,8 @@ function isValidUrl(url) {
 
 // Check if code is valid
 function isValidCode(code) {
-  return /^[a-zA-Z0-9_-]+$/.test(code);
+  // Allow codes as short as 2 characters
+  return /^[a-zA-Z0-9_-]{2,}$/.test(code);
 }
 
 // Check if code is already taken
@@ -201,32 +254,29 @@ function isCodeTaken(code) {
 }
 
 // Generate a unique code
-function generateUniqueCode(length = 6) {
-  // Use the year 2025 as part of the code to make it unique and modern
-  const prefix = CURRENT_YEAR.toString().substring(2); // "25"
-  
+function generateUniqueCode(length = 3) {
   // Characters to use for the random part (excluding similar looking characters)
-  const chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  
+  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+
   let isUnique = false;
   let code;
-  
+
   while (!isUnique) {
     // Generate random part
     let randomPart = '';
     for (let i = 0; i < length; i++) {
       randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    
-    // Combine prefix and random part
-    code = `${prefix}${randomPart}`;
-    
+
+    // Create a short code
+    code = randomPart;
+
     // Check if code is unique
     if (!isCodeTaken(code)) {
       isUnique = true;
     }
   }
-  
+
   return code;
 }
 
@@ -282,10 +332,51 @@ function showResult(linkObj) {
   // Hide the form and show the result
   shortenerFormContainer.classList.add('hidden');
   resultContainer.classList.remove('hidden');
-  
+
   // Set the short URL
   shortUrlLink.href = linkObj.shortUrl;
   shortUrlLink.textContent = linkObj.shortUrl;
+
+  // Show network sharing info
+  showNetworkSharingInfo(linkObj.urlCode);
+}
+
+// Show network sharing information
+function showNetworkSharingInfo(urlCode) {
+  // Check if network sharing container exists
+  let networkContainer = document.getElementById('network-sharing-container');
+
+  // If it doesn't exist, create it
+  if (!networkContainer) {
+    networkContainer = document.createElement('div');
+    networkContainer.id = 'network-sharing-container';
+    networkContainer.className = 'network-sharing-container';
+
+    // Add it after the short URL display
+    const shortUrlDisplay = document.querySelector('.short-url-display');
+    shortUrlDisplay.parentNode.insertBefore(networkContainer, shortUrlDisplay.nextSibling);
+  }
+
+  // Get the local IP address for sharing
+  getLocalNetworkUrl().then(localUrl => {
+    const networkUrl = `${localUrl}${urlCode}`;
+
+    // Update the network container content
+    networkContainer.innerHTML = `
+      <div class="network-sharing-header">
+        <i class="fas fa-network-wired"></i>
+        <h3>Local Network Sharing</h3>
+      </div>
+      <p class="network-sharing-info">Share this link with others on your network:</p>
+      <div class="network-url-display">
+        <a href="${networkUrl}" target="_blank" rel="noopener noreferrer">${networkUrl}</a>
+        <button class="btn btn-icon" onclick="copyToClipboard('${networkUrl}')">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+      <p class="network-sharing-note">Anyone on your local network can access this link</p>
+    `;
+  });
 }
 
 // Generate QR code using qrcode.js library
