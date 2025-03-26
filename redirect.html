@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting... | URL2025</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+
+  <!-- Add QR code meta tags for better sharing -->
+  <meta property="og:title" content="URL2025 Shortened Link">
+  <meta property="og:description" content="Click to visit this shortened URL">
+  <meta property="og:type" content="website">
+  <meta property="og:image" id="og-image" content="">
+  <style>
+    .redirect-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: var(--spacing-xl);
+    }
+    
+    .redirect-icon {
+      font-size: 4rem;
+      color: var(--primary-color);
+      margin-bottom: var(--spacing-xl);
+      animation: pulse 2s infinite;
+    }
+    
+    .redirect-title {
+      font-size: var(--font-size-2xl);
+      font-weight: 700;
+      margin-bottom: var(--spacing-md);
+      color: var(--text-primary);
+    }
+    
+    .redirect-message {
+      font-size: var(--font-size-lg);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto var(--spacing-xl);
+    }
+    
+    .redirect-url {
+      font-size: var(--font-size-md);
+      color: var(--primary-color);
+      word-break: break-all;
+      margin-bottom: var(--spacing-xl);
+      padding: var(--spacing-md);
+      background-color: var(--bg-secondary);
+      border-radius: var(--border-radius);
+      max-width: 100%;
+    }
+    
+    .redirect-progress {
+      width: 100%;
+      max-width: 300px;
+      height: 6px;
+      background-color: var(--bg-secondary);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: var(--spacing-xl);
+    }
+    
+    .redirect-progress-bar {
+      height: 100%;
+      background-color: var(--primary-color);
+      width: 0%;
+      transition: width 3s linear;
+    }
+    
+    .redirect-actions {
+      display: flex;
+      gap: var(--spacing-md);
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <main>
+      <div class="redirect-container">
+        <div class="redirect-icon">
+          <i class="fas fa-arrow-right-long"></i>
+        </div>
+        <h1 class="redirect-title">Redirecting you...</h1>
+        <p class="redirect-message">You're being redirected to the following URL:</p>
+        <div class="redirect-url" id="destination-url">Loading...</div>
+        <div class="redirect-progress">
+          <div class="redirect-progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-container" style="margin: 20px 0;">
+          <p class="qr-label">QR Code for this link:</p>
+          <div id="qr-code" class="qr-code" style="background-color: white; padding: 10px; border-radius: 8px; display: inline-block;"></div>
+        </div>
+
+        <div class="redirect-actions">
+          <button id="redirect-now" class="primary-button">
+            <span class="button-text">Go Now</span>
+          </button>
+          <a href="index.html" class="secondary-button">
+            <span class="button-text">Cancel</span>
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const destinationUrlElement = document.getElementById('destination-url');
+      const progressBar = document.getElementById('progress-bar');
+      const redirectNowButton = document.getElementById('redirect-now');
+      const qrCodeContainer = document.getElementById('qr-code');
+      const ogImageMeta = document.getElementById('og-image');
+
+      // Start progress bar animation
+      setTimeout(() => {
+        progressBar.style.width = '100%';
+      }, 100);
+
+      if (!code) {
+        destinationUrlElement.textContent = 'Invalid URL code';
+        return;
+      }
+
+      // Get links from localStorage
+      const linksJson = localStorage.getItem('url2025_links');
+      const links = linksJson ? JSON.parse(linksJson) : [];
+
+      // Find the link with this code
+      const link = links.find(link => link.urlCode === code);
+
+      if (!link) {
+        destinationUrlElement.textContent = 'This shortened URL is invalid or has expired';
+        return;
+      }
+
+      // Display the destination URL
+      destinationUrlElement.textContent = link.longUrl;
+
+      // Generate QR code
+      generateQRCode(link.shortUrl);
+
+      // Update click count
+      link.clicks += 1;
+      link.lastClickedAt = new Date().toISOString();
+
+      // Save updated link back to localStorage
+      const updatedLinks = links.map(l => l.id === link.id ? link : l);
+      localStorage.setItem('url2025_links', JSON.stringify(updatedLinks));
+
+      // Set up redirect
+      let redirectTimeout = setTimeout(() => {
+        window.location.href = link.longUrl;
+      }, 3000);
+
+      // Redirect now button
+      redirectNowButton.addEventListener('click', function() {
+        clearTimeout(redirectTimeout);
+        window.location.href = link.longUrl;
+      });
+
+      // Function to generate QR code
+      function generateQRCode(url) {
+        // Create an image element
+        const img = document.createElement('img');
+
+        // Set the source to Google Charts API
+        const qrCodeUrl = `https://chart.googleapis.com/chart?cht=qr&chl=${encodeURIComponent(url)}&chs=150x150&chld=H|0`;
+        img.src = qrCodeUrl;
+
+        // Set alt text
+        img.alt = 'QR Code for ' + url;
+
+        // Add the image to the container
+        qrCodeContainer.innerHTML = '';
+        qrCodeContainer.appendChild(img);
+
+        // Update the og:image meta tag
+        ogImageMeta.content = qrCodeUrl;
+      }
+    });
+  </script>
+</body>
+</html>
