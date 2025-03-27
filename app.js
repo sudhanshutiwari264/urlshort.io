@@ -255,20 +255,117 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchTracksFromAPI(genres) {
         // Randomly select one of the genres
         const randomGenre = genres[Math.floor(Math.random() * genres.length)];
-        
+
         try {
-            // Using the Deezer API via RapidAPI
-            // Note: In a real app, you would need to sign up for RapidAPI and get your own API key
-            // This is a mock implementation
-            
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Return mock data for demonstration
+            // First try to fetch from Spotify API
+            try {
+                const spotifyTracks = await fetchFromSpotify(randomGenre);
+                if (spotifyTracks && spotifyTracks.length > 0) {
+                    return spotifyTracks;
+                }
+            } catch (spotifyError) {
+                console.warn('Spotify API error, falling back to Jamendo:', spotifyError);
+            }
+
+            // Then try Jamendo API
+            try {
+                const jamendoTracks = await fetchFromJamendo(randomGenre);
+                if (jamendoTracks && jamendoTracks.length > 0) {
+                    return jamendoTracks;
+                }
+            } catch (jamendoError) {
+                console.warn('Jamendo API error, falling back to mock data:', jamendoError);
+            }
+
+            // If both APIs fail, use mock data
             return generateMockTracks(currentPlaylist.mood);
-            
+
         } catch (error) {
             console.error('API Error:', error);
+            throw error;
+        }
+    }
+
+    // Function to fetch tracks from Spotify
+    async function fetchFromSpotify(genre) {
+        // Spotify API credentials - in a real app, these would be secured on a server
+        // For demo purposes only - you should NEVER expose these in client-side code
+        const clientId = '1a2b3c4d5e6f7g8h9i0j';  // Replace with your actual client ID
+        const clientSecret = '1a2b3c4d5e6f7g8h9i0j'; // Replace with your actual client secret
+
+        try {
+            // Get access token
+            const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret)
+                },
+                body: 'grant_type=client_credentials'
+            });
+
+            if (!tokenResponse.ok) {
+                throw new Error('Failed to get Spotify access token');
+            }
+
+            const tokenData = await tokenResponse.json();
+            const accessToken = tokenData.access_token;
+
+            // Search for tracks by genre
+            const searchResponse = await fetch(`https://api.spotify.com/v1/search?q=genre:${genre}&type=track&limit=8`, {
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            });
+
+            if (!searchResponse.ok) {
+                throw new Error('Failed to search Spotify tracks');
+            }
+
+            const searchData = await searchResponse.json();
+
+            // Format the response
+            return searchData.tracks.items.map(track => ({
+                id: track.id,
+                title: track.name,
+                artist: track.artists[0].name,
+                album: track.album.name,
+                cover: track.album.images[0].url,
+                preview: track.preview_url
+            }));
+
+        } catch (error) {
+            console.error('Spotify API error:', error);
+            throw error;
+        }
+    }
+
+    // Function to fetch tracks from Jamendo
+    async function fetchFromJamendo(genre) {
+        // Jamendo API client ID - in a real app, this would be secured
+        const clientId = 'your_jamendo_client_id'; // Replace with your actual client ID
+
+        try {
+            const response = await fetch(`https://api.jamendo.com/v3.0/tracks/?client_id=${clientId}&format=json&limit=8&tags=${genre}`);
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch from Jamendo API');
+            }
+
+            const data = await response.json();
+
+            // Format the response
+            return data.results.map(track => ({
+                id: track.id,
+                title: track.name,
+                artist: track.artist_name,
+                album: track.album_name,
+                cover: track.album_image,
+                preview: track.audio
+            }));
+
+        } catch (error) {
+            console.error('Jamendo API error:', error);
             throw error;
         }
     }
@@ -277,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateMockTracks(mood) {
         const moodConfig = moodConfigs[mood];
         const tracks = [];
-        
+
         // Mock track data based on mood
         const mockArtists = {
             happy: ['Pharrell Williams', 'Justin Timberlake', 'Katy Perry', 'Bruno Mars', 'Taylor Swift'],
@@ -289,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
             focused: ['Hans Zimmer', 'Mozart', 'Bach', 'Explosions in the Sky', 'Tycho'],
             romantic: ['Ed Sheeran', 'John Legend', 'Beyoncé', 'Frank Sinatra', 'Marvin Gaye']
         };
-        
+
         const mockSongs = {
             happy: ['Happy', 'Can\'t Stop the Feeling', 'Uptown Funk', 'Good as Hell', 'Walking on Sunshine'],
             excited: ['Titanium', 'Don\'t You Worry Child', 'Levels', 'Closer', 'Wake Me Up'],
@@ -300,22 +397,86 @@ document.addEventListener('DOMContentLoaded', () => {
             focused: ['Time', 'Piano Concerto No. 21', 'Air on the G String', 'Your Hand in Mine', 'Awake'],
             romantic: ['Perfect', 'All of Me', 'Halo', 'The Way You Look Tonight', 'Let\'s Stay Together']
         };
-        
+
+        // Royalty-free music samples from Pixabay for demo purposes
+        // These are mapped to different moods
+        const moodPreviews = {
+            happy: [
+                'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/03/19/audio_c8e2e367a7.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/10/25/audio_946b34eaf9.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/11/22/audio_de7d47feb0.mp3'
+            ],
+            excited: [
+                'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1a609013c8.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe58f49.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/10/30/audio_f1fa483f9b.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/09/02/audio_69db1d6e01.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/01/20/audio_bae2b7b68d.mp3'
+            ],
+            relaxed: [
+                'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8e9124485.mp3',
+                'https://cdn.pixabay.com/download/audio/2021/11/13/audio_cb4f1212a9.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/04/27/audio_c52cf6f4c5.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/01/18/audio_e92fe2aa6c.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/01/25/audio_9cc82a4773.mp3'
+            ],
+            sad: [
+                'https://cdn.pixabay.com/download/audio/2022/01/27/audio_d0c19a4f4d.mp3',
+                'https://cdn.pixabay.com/download/audio/2021/11/25/audio_00fa5593f1.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/02/07/audio_d0c3b3e428.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/02/11/audio_8fad8a8e1e.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/02/28/audio_c9b7d810d5.mp3'
+            ],
+            angry: [
+                'https://cdn.pixabay.com/download/audio/2022/10/16/audio_f52af083e2.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/09/18/audio_a4d4a8be7f.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/08/23/audio_3b6a08e578.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/07/04/audio_ae1d2b08c7.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/05/13/audio_a8a0b1b7f4.mp3'
+            ],
+            tired: [
+                'https://cdn.pixabay.com/download/audio/2022/01/21/audio_31743c6c02.mp3',
+                'https://cdn.pixabay.com/download/audio/2021/11/01/audio_cb4c8bcf7f.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/01/20/audio_1d2f9a3d4e.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/02/11/audio_c6b0d2f1e5.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/02/07/audio_d0c3b3e428.mp3'
+            ],
+            focused: [
+                'https://cdn.pixabay.com/download/audio/2021/11/25/audio_5c6b20d881.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/01/13/audio_3b6c767d23.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/03/07/audio_40a06cc3c7.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/04/04/audio_0428e7e8e8.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/04/08/audio_8f2c346ba4.mp3'
+            ],
+            romantic: [
+                'https://cdn.pixabay.com/download/audio/2022/01/18/audio_e92fe2aa6c.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/02/11/audio_8fad8a8e1e.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/03/19/audio_c8e2e367a7.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/01/27/audio_d0c19a4f4d.mp3',
+                'https://cdn.pixabay.com/download/audio/2022/01/25/audio_9cc82a4773.mp3'
+            ]
+        };
+
         // Generate 8 mock tracks
         for (let i = 0; i < 8; i++) {
             const artistIndex = i % 5;
             const songIndex = i % 5;
-            
+
+            // Get a preview URL for this mood
+            const previewUrl = moodPreviews[mood][i % 5];
+
             tracks.push({
                 id: `mock-${mood}-${i}`,
                 title: mockSongs[mood][songIndex],
                 artist: mockArtists[mood][artistIndex],
                 album: `${mockArtists[mood][artistIndex]} - Greatest Hits`,
                 cover: `https://picsum.photos/seed/${mood}${i}/300/300`,
-                preview: null // No actual preview URL in mock data
+                preview: previewUrl // Actual preview URL from Pixabay (royalty-free)
             });
         }
-        
+
         return tracks;
     }
 
@@ -361,29 +522,298 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Audio player instance
+    let currentAudio = null;
+    let currentlyPlayingId = null;
+
     // Function to play a track
     function playTrack(track) {
-        // In a real app, this would play the track
         console.log('Playing track:', track.title);
-        
-        // Show notification
-        showNotification(`Playing: ${track.title} by ${track.artist}`);
-        
-        // If we had actual preview URLs, we would play them here
+
+        // If there's already a track playing, stop it
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+
+            // If the same track was clicked, just pause it and update UI
+            if (currentlyPlayingId === track.id) {
+                updatePlayButtonUI(track.id, false);
+                currentlyPlayingId = null;
+                showNotification(`Paused: ${track.title}`);
+                return;
+            }
+
+            // Update previous track's button
+            if (currentlyPlayingId) {
+                updatePlayButtonUI(currentlyPlayingId, false);
+            }
+        }
+
+        // If the track has a preview URL
         if (track.preview) {
-            const audio = new Audio(track.preview);
-            audio.play();
+            // Create new audio instance
+            currentAudio = new Audio(track.preview);
+            currentlyPlayingId = track.id;
+
+            // Update UI
+            updatePlayButtonUI(track.id, true);
+
+            // Play the track
+            currentAudio.play()
+                .then(() => {
+                    showNotification(`Playing: ${track.title} by ${track.artist}`);
+                })
+                .catch(error => {
+                    console.error('Error playing audio:', error);
+                    showNotification(`Couldn't play track: ${error.message}`, true);
+                    currentAudio = null;
+                    currentlyPlayingId = null;
+                    updatePlayButtonUI(track.id, false);
+                });
+
+            // When track ends
+            currentAudio.addEventListener('ended', () => {
+                currentAudio = null;
+                currentlyPlayingId = null;
+                updatePlayButtonUI(track.id, false);
+            });
+        } else {
+            // If no preview URL is available
+            showNotification(`No preview available for "${track.title}"`, true);
+
+            // For demo purposes, let's try to use a mock audio file
+            const mockAudioUrl = getMockAudioUrl(track.id);
+            if (mockAudioUrl) {
+                currentAudio = new Audio(mockAudioUrl);
+                currentlyPlayingId = track.id;
+
+                // Update UI
+                updatePlayButtonUI(track.id, true);
+
+                // Play the mock audio
+                currentAudio.play()
+                    .then(() => {
+                        showNotification(`Playing demo: ${track.title} by ${track.artist}`);
+                    })
+                    .catch(error => {
+                        console.error('Error playing mock audio:', error);
+                        currentAudio = null;
+                        currentlyPlayingId = null;
+                        updatePlayButtonUI(track.id, false);
+                    });
+
+                // When track ends
+                currentAudio.addEventListener('ended', () => {
+                    currentAudio = null;
+                    currentlyPlayingId = null;
+                    updatePlayButtonUI(track.id, false);
+                });
+            }
         }
     }
 
+    // Function to update play button UI
+    function updatePlayButtonUI(trackId, isPlaying) {
+        const trackCard = document.querySelector(`[data-track-id="${trackId}"]`);
+        if (trackCard) {
+            const playButton = trackCard.querySelector('.play-track');
+            const icon = playButton.querySelector('i');
+
+            if (isPlaying) {
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+                trackCard.classList.add('playing');
+            } else {
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-play');
+                trackCard.classList.remove('playing');
+            }
+        }
+    }
+
+    // Function to get mock audio URL for demo purposes
+    function getMockAudioUrl(trackId) {
+        // These are royalty-free music samples for demo purposes
+        const mockAudios = [
+            'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3', // Upbeat
+            'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8e9124485.mp3', // Relaxed
+            'https://cdn.pixabay.com/download/audio/2022/01/27/audio_d0c19a4f4d.mp3', // Sad
+            'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1a609013c8.mp3', // Energetic
+            'https://cdn.pixabay.com/download/audio/2021/11/25/audio_5c6b20d881.mp3'  // Focused
+        ];
+
+        // Use the track ID to deterministically select a mock audio
+        const hash = trackId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return mockAudios[hash % mockAudios.length];
+    }
+
+    // Track queue for "Play All" functionality
+    let trackQueue = [];
+    let isPlayingAll = false;
+
     // Function to play all tracks
     function playAllTracks() {
-        if (currentPlaylist.tracks.length > 0) {
-            // In a real app, this would play all tracks in sequence
-            showNotification(`Playing your ${moodConfigs[currentPlaylist.mood].title} playlist`);
-            
-            // Play the first track for demonstration
-            playTrack(currentPlaylist.tracks[0]);
+        if (currentPlaylist.tracks.length === 0) {
+            showNotification('No tracks to play', true);
+            return;
+        }
+
+        // If already playing all, stop
+        if (isPlayingAll) {
+            stopPlayingAll();
+            return;
+        }
+
+        // Set up the queue
+        trackQueue = [...currentPlaylist.tracks];
+        isPlayingAll = true;
+
+        // Update Play All button
+        updatePlayAllButtonUI(true);
+
+        // Show notification
+        showNotification(`Playing your ${moodConfigs[currentPlaylist.mood].title} playlist`);
+
+        // Start playing the first track
+        playNextInQueue();
+    }
+
+    // Function to play next track in queue
+    function playNextInQueue() {
+        if (trackQueue.length === 0) {
+            // Queue is empty, we're done
+            isPlayingAll = false;
+            updatePlayAllButtonUI(false);
+            return;
+        }
+
+        // Get the next track
+        const nextTrack = trackQueue.shift();
+
+        // If there's already a track playing, stop it
+        if (currentAudio) {
+            currentAudio.pause();
+
+            // Update previous track's button
+            if (currentlyPlayingId) {
+                updatePlayButtonUI(currentlyPlayingId, false);
+            }
+        }
+
+        // Function to set up the next track
+        const setupNextTrack = () => {
+            // If we're still in "play all" mode
+            if (isPlayingAll) {
+                // Wait a bit before playing the next track
+                setTimeout(playNextInQueue, 1000);
+            }
+        };
+
+        // If the track has a preview URL
+        if (nextTrack.preview) {
+            // Create new audio instance
+            currentAudio = new Audio(nextTrack.preview);
+            currentlyPlayingId = nextTrack.id;
+
+            // Update UI
+            updatePlayButtonUI(nextTrack.id, true);
+
+            // Play the track
+            currentAudio.play()
+                .then(() => {
+                    showNotification(`Now playing: ${nextTrack.title} by ${nextTrack.artist}`);
+                })
+                .catch(error => {
+                    console.error('Error playing audio:', error);
+                    currentAudio = null;
+                    currentlyPlayingId = null;
+                    updatePlayButtonUI(nextTrack.id, false);
+                    setupNextTrack(); // Try the next track
+                });
+
+            // When track ends
+            currentAudio.addEventListener('ended', () => {
+                currentAudio = null;
+                currentlyPlayingId = null;
+                updatePlayButtonUI(nextTrack.id, false);
+                setupNextTrack();
+            });
+        } else {
+            // If no preview URL is available, try mock audio
+            const mockAudioUrl = getMockAudioUrl(nextTrack.id);
+            if (mockAudioUrl) {
+                currentAudio = new Audio(mockAudioUrl);
+                currentlyPlayingId = nextTrack.id;
+
+                // Update UI
+                updatePlayButtonUI(nextTrack.id, true);
+
+                // Play the mock audio
+                currentAudio.play()
+                    .then(() => {
+                        showNotification(`Playing demo: ${nextTrack.title} by ${nextTrack.artist}`);
+                    })
+                    .catch(error => {
+                        console.error('Error playing mock audio:', error);
+                        currentAudio = null;
+                        currentlyPlayingId = null;
+                        updatePlayButtonUI(nextTrack.id, false);
+                        setupNextTrack(); // Try the next track
+                    });
+
+                // When track ends
+                currentAudio.addEventListener('ended', () => {
+                    currentAudio = null;
+                    currentlyPlayingId = null;
+                    updatePlayButtonUI(nextTrack.id, false);
+                    setupNextTrack();
+                });
+            } else {
+                // No audio available, skip to next
+                setupNextTrack();
+            }
+        }
+    }
+
+    // Function to stop playing all tracks
+    function stopPlayingAll() {
+        isPlayingAll = false;
+        trackQueue = [];
+
+        // Stop current audio
+        if (currentAudio) {
+            currentAudio.pause();
+
+            // Update previous track's button
+            if (currentlyPlayingId) {
+                updatePlayButtonUI(currentlyPlayingId, false);
+            }
+
+            currentAudio = null;
+            currentlyPlayingId = null;
+        }
+
+        // Update Play All button
+        updatePlayAllButtonUI(false);
+
+        showNotification('Playlist stopped');
+    }
+
+    // Function to update Play All button UI
+    function updatePlayAllButtonUI(isPlaying) {
+        const playAllButton = document.getElementById('play-all');
+        const icon = playAllButton.querySelector('i');
+
+        if (isPlaying) {
+            icon.classList.remove('fa-play');
+            icon.classList.add('fa-stop');
+            playAllButton.textContent = ' Stop Playlist';
+            playAllButton.prepend(icon);
+        } else {
+            icon.classList.remove('fa-stop');
+            icon.classList.add('fa-play');
+            playAllButton.textContent = ' Play All';
+            playAllButton.prepend(icon);
         }
     }
 

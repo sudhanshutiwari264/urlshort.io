@@ -254,11 +254,33 @@ h2 {
     overflow: hidden;
     transition: var(--transition);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    position: relative;
 }
 
 .track-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.track-card.playing {
+    background: linear-gradient(to right, rgba(108, 92, 231, 0.1), rgba(108, 92, 231, 0.2));
+    box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3);
+    transform: translateY(-5px);
+}
+
+.track-card.playing::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--primary-color);
+}
+
+.track-card.playing .track-title {
+    color: var(--primary-color);
+    font-weight: 700;
 }
 
 .track-image {
