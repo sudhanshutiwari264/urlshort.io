@@ -622,6 +622,7 @@ footer {
     color: white;
 }
 
+.spinner,
 .loading-spinner {
     border: 5px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
@@ -635,6 +636,31 @@ footer {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--success-color);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(100px);
+    opacity: 0;
+    z-index: 1000;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification.error {
+    background-color: var(--error-color);
 }
 
 /* Tracks Loading Message */

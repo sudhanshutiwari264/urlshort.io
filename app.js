@@ -37,37 +37,37 @@ document.addEventListener('DOMContentLoaded', function() {
             emoji: '😊',
             title: 'Happy',
             description: 'You\'re feeling positive and upbeat. Here\'s a playlist to match your happy mood!',
-            genres: ['pop', 'happy', 'upbeat']
+            keywords: ['happy', 'joy', 'glad', 'delighted', 'cheerful', 'content', 'pleased', 'thrilled', 'upbeat', 'positive']
         },
         excited: {
             emoji: '🤩',
             title: 'Excited',
             description: 'You\'re feeling energetic and enthusiastic. This playlist will keep your energy high!',
-            genres: ['electronic', 'dance', 'upbeat']
+            keywords: ['excited', 'thrilled', 'enthusiastic', 'eager', 'energetic', 'pumped', 'psyched', 'stoked', 'amped']
         },
         relaxed: {
             emoji: '😌',
             title: 'Relaxed',
             description: 'You\'re feeling calm and peaceful. Enjoy this soothing playlist to maintain your tranquility.',
-            genres: ['ambient', 'chill', 'acoustic']
+            keywords: ['relaxed', 'calm', 'peaceful', 'tranquil', 'serene', 'chill', 'mellow', 'zen', 'easy-going']
         },
         sad: {
             emoji: '😢',
             title: 'Sad',
             description: 'You\'re feeling down today. This playlist might help you process your emotions.',
-            genres: ['ballad', 'sad', 'emotional']
+            keywords: ['sad', 'unhappy', 'depressed', 'down', 'blue', 'gloomy', 'melancholy', 'heartbroken', 'upset', 'tearful']
         },
         angry: {
             emoji: '😠',
             title: 'Angry',
             description: 'You\'re feeling frustrated or angry. This playlist might help you release some tension.',
-            genres: ['rock', 'metal', 'intense']
+            keywords: ['angry', 'mad', 'furious', 'irritated', 'annoyed', 'frustrated', 'outraged', 'enraged', 'hostile']
         },
         tired: {
             emoji: '😴',
             title: 'Tired',
             description: 'You\'re feeling low on energy. Here\'s some gentle music to help you relax and recharge.',
-            genres: ['ambient', 'soft', 'calm']
+            keywords: ['tired', 'exhausted', 'sleepy', 'fatigued', 'drained', 'weary', 'worn out', 'lethargic']
         },
         focused: {
             emoji: '🧠',
