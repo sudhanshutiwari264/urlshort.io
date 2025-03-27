@@ -3,130 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodTunes - AI-Powered Music Recommendations</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Mood Music Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
         <header>
             <div class="logo">
                 <i class="fas fa-music"></i>
-                <h1>Mood<span>Tunes</span></h1>
+                <h1>Mood<span>Music</span></h1>
             </div>
-            <p class="tagline">AI-powered music recommendations based on your mood</p>
+            <p class="tagline">Discover music that matches your mood</p>
         </header>
 
-        <main>
-            <section class="input-section">
-                <div class="mood-input-container">
-                    <h2>How are you feeling today?</h2>
-                    <textarea id="mood-input" placeholder="Describe your mood or what's on your mind... (e.g., 'I'm feeling really energetic and excited today!')"></textarea>
-                    <button id="analyze-btn" class="primary-btn">
-                        <i class="fas fa-brain"></i> Analyze My Mood
+        <section class="input-section">
+            <div class="mood-input-container">
+                <h2>How are you feeling today?</h2>
+                <textarea id="mood-input" placeholder="Describe your mood or feelings... (e.g., 'I'm feeling happy and energetic today')"></textarea>
+                <button id="analyze-btn" class="primary-btn">
+                    <i class="fas fa-search"></i>
+                    Analyze My Mood
+                </button>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <div class="mood-analysis">
+                <h2>Your Mood Analysis</h2>
+                <div class="mood-card">
+                    <div class="mood-emoji" id="mood-emoji">😊</div>
+                    <div class="mood-details">
+                        <h3 id="mood-title">Happy</h3>
+                        <p id="mood-description">You're feeling positive and upbeat. Here's a playlist to match your happy mood!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="playlist-container">
+                <h2>Your Personalized Playlist</h2>
+                <div class="playlist-controls">
+                    <button class="control-btn" id="play-all-btn">
+                        <i class="fas fa-play"></i>
+                        Play All
+                    </button>
+                    <button class="control-btn" id="shuffle-btn">
+                        <i class="fas fa-random"></i>
+                        Shuffle
+                    </button>
+                    <button class="control-btn" id="share-playlist-btn">
+                        <i class="fas fa-share-alt"></i>
+                        Share Playlist
+                    </button>
+                    <button class="control-btn" id="save-playlist-btn">
+                        <i class="fas fa-save"></i>
+                        Save Playlist
                     </button>
                 </div>
-            </section>
-
-            <section class="results-section" id="results-section">
-                <div class="mood-analysis">
-                    <h2>Your Mood Analysis</h2>
-                    <div class="mood-card">
-                        <div class="mood-emoji" id="mood-emoji">😊</div>
-                        <div class="mood-details">
-                            <h3 id="mood-title">Happy</h3>
-                            <p id="mood-description">You're feeling positive and upbeat. Here's a playlist to match your happy mood!</p>
-                        </div>
+                <div class="tracks-container">
+                    <div class="tracks-loading-message">
+                        <p>Loading your personalized tracks...</p>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="playlist-container">
-                    <h2>Your Personalized Playlist</h2>
-                    <div class="playlist-controls">
-                        <button id="play-all" class="control-btn">
-                            <i class="fas fa-play"></i> Play All
-                        </button>
-                        <button id="shuffle" class="control-btn">
-                            <i class="fas fa-random"></i> Shuffle
-                        </button>
-                        <button id="share-playlist" class="control-btn">
-                            <i class="fas fa-share-alt"></i> Share Playlist
-                        </button>
-                        <button id="generate-qr" class="control-btn">
-                            <i class="fas fa-qrcode"></i> Generate QR Code
-                        </button>
-                    </div>
-                    <div class="tracks-container" id="tracks-container">
-                        <!-- Tracks will be added here dynamically -->
-                    </div>
+        <section class="features-section">
+            <h2>Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>Mood Analysis</h3>
+                    <p>Our AI analyzes your mood from your text and creates a personalized music experience.</p>
                 </div>
-            </section>
+                <div class="feature-card">
+                    <i class="fas fa-music"></i>
+                    <h3>YouTube Music Integration</h3>
+                    <p>Access millions of songs from YouTube Music's vast library based on your mood.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-headphones-alt"></i>
+                    <h3>Multi-Source Playback</h3>
+                    <p>Play music from YouTube Music, Deezer, and other sources all in one place.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-share-alt"></i>
+                    <h3>Easy Sharing</h3>
+                    <p>Share your mood and playlist with friends on social media or via direct link.</p>
+                </div>
+            </div>
+        </section>
 
-            <section class="features-section">
-                <h2>Features</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <i class="fas fa-brain"></i>
-                        <h3>Mood Analysis</h3>
-                        <p>Our AI analyzes your text to understand your emotional state.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class="fas fa-music"></i>
-                        <h3>Personalized Playlists</h3>
-                        <p>Get music recommendations tailored to your current mood.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class="fas fa-qrcode"></i>
-                        <h3>QR Code Generation</h3>
-                        <p>Generate QR codes for your playlists to share with friends.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class="fas fa-share-alt"></i>
-                        <h3>Easy Sharing</h3>
-                        <p>Share your mood-based playlists on social media.</p>
-                    </div>
+        <section class="how-it-works-section">
+            <h2>How It Works</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Describe Your Mood</h3>
+                    <p>Tell us how you're feeling in your own words.</p>
                 </div>
-            </section>
-
-            <section class="how-it-works-section">
-                <h2>How It Works</h2>
-                <div class="steps-container">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <h3>Share Your Feelings</h3>
-                        <p>Type how you're feeling or what's on your mind.</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <h3>AI Analysis</h3>
-                        <p>Our algorithm analyzes your text to determine your emotional state.</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <h3>Generate Playlist</h3>
-                        <p>We create a personalized playlist that matches your current mood.</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <h3>Enjoy & Share</h3>
-                        <p>Listen to your playlist, save it for later, or share it with friends.</p>
-                    </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>AI Analysis</h3>
+                    <p>Our AI analyzes your text to understand your emotional state.</p>
                 </div>
-            </section>
-        </main>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Music Matching</h3>
+                    <p>We match your mood with the perfect songs from YouTube Music and other sources.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Enjoy & Share</h3>
+                    <p>Listen to your personalized playlist and share it with others.</p>
+                </div>
+            </div>
+        </section>
 
         <footer>
             <div class="footer-content">
-                <div class="footer-logo">
-                    <i class="fas fa-music"></i>
-                    <h2>MoodTunes</h2>
-                </div>
-                <div class="footer-links">
-                    <a href="#" class="footer-link">About</a>
-                    <a href="#" class="footer-link">Privacy Policy</a>
-                    <a href="#" class="footer-link">Terms of Service</a>
-                    <a href="#" class="footer-link">Contact</a>
+                <div>
+                    <div class="footer-logo">
+                        <i class="fas fa-music"></i>
+                        <h2>MoodMusic</h2>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">About</a>
+                        <a href="#" class="footer-link">Privacy</a>
+                        <a href="#" class="footer-link">Terms</a>
+                        <a href="#" class="footer-link">Contact</a>
+                    </div>
                 </div>
                 <div class="social-links">
                     <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
@@ -136,54 +143,9 @@
                 </div>
             </div>
             <div class="copyright">
-                &copy; 2023 MoodTunes. All rights reserved.
+                &copy; 2023 MoodMusic. All rights reserved.
             </div>
         </footer>
-    </div>
-
-    <!-- Share Modal -->
-    <div class="modal" id="share-modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-share-modal">&times;</span>
-            <h3>Share Your Playlist</h3>
-            <p>Share this unique playlist with your friends!</p>
-            <div class="share-link-container">
-                <input type="text" id="share-link" readonly>
-                <button id="copy-link-btn"><i class="fas fa-copy"></i></button>
-            </div>
-            <div class="share-buttons">
-                <button class="share-btn twitter">
-                    <i class="fab fa-twitter"></i> Twitter
-                </button>
-                <button class="share-btn facebook">
-                    <i class="fab fa-facebook"></i> Facebook
-                </button>
-                <button class="share-btn whatsapp">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- QR Code Modal -->
-    <div class="modal" id="qr-modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-qr-modal">&times;</span>
-            <h3>Playlist QR Code</h3>
-            <p>Scan this QR code to access your playlist:</p>
-            <div id="qr-code-container"></div>
-            <button id="download-qr" class="primary-btn">
-                <i class="fas fa-download"></i> Download QR Code
-            </button>
-        </div>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <p id="loading-text">Analyzing your mood...</p>
-        </div>
     </div>
 
     <script src="app.js"></script>

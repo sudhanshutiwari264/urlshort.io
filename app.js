@@ -216,6 +216,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const randomGenre = genres[Math.floor(Math.random() * genres.length)];
 
         try {
+            // Try to fetch from YouTube Music API (primary source)
+            try {
+                const ytmusicTracks = await fetchFromYouTube(randomGenre);
+                if (ytmusicTracks && ytmusicTracks.length > 0) {
+                    return ytmusicTracks;
+                }
+            } catch (ytmusicError) {
+                console.warn('YouTube Music API error, trying next source:', ytmusicError);
+            }
+
             // Try to fetch from Deezer
             try {
                 const deezerTracks = await fetchFromDeezer(randomGenre);
@@ -224,16 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } catch (deezerError) {
                 console.warn('Deezer API error, trying next source:', deezerError);
-            }
-
-            // Try to fetch from YouTube
-            try {
-                const youtubeTracks = await fetchFromYouTube(randomGenre);
-                if (youtubeTracks && youtubeTracks.length > 0) {
-                    return youtubeTracks;
-                }
-            } catch (youtubeError) {
-                console.warn('YouTube API error, trying next source:', youtubeError);
             }
 
             // Try to fetch from Open Source Audio Library
@@ -340,53 +340,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Function to fetch tracks from YouTube
+    // Function to fetch tracks from YouTube Music API
     async function fetchFromYouTube(genre) {
         try {
-            // Map our genre to YouTube search terms
-            const moodToYouTubeMap = {
-                'happy': 'happy music no copyright',
-                'excited': 'energetic music no copyright',
-                'relaxed': 'relaxing music no copyright',
-                'sad': 'sad music no copyright',
-                'angry': 'powerful music no copyright',
-                'tired': 'ambient music no copyright',
-                'focused': 'concentration music no copyright',
-                'romantic': 'romantic music no copyright'
+            // Map our genre to YouTube Music search terms
+            const moodToYTMusicMap = {
+                'happy': 'happy',
+                'excited': 'energetic',
+                'relaxed': 'relaxing',
+                'sad': 'sad',
+                'angry': 'powerful',
+                'tired': 'ambient',
+                'focused': 'concentration',
+                'romantic': 'romantic'
             };
 
             // Use the current mood for better results
-            const searchTerm = moodToYouTubeMap[currentPlaylist.mood] || `${genre} music no copyright`;
+            const searchTerm = moodToYTMusicMap[currentPlaylist.mood] || genre;
 
-            // In a real app, you would use the YouTube Data API with your API key
-            // For this demo, we'll use a static JSON file with YouTube data
-            const response = await fetch('/public-music-data/youtube-sample.json');
+            // Call our server-side API that uses ytmusicapi
+            const response = await fetch(`/api/mood?mood=${searchTerm}&limit=8`);
 
             if (!response.ok) {
-                throw new Error('Failed to fetch from YouTube');
+                throw new Error('Failed to fetch from YouTube Music API');
             }
 
-            const data = await response.json();
+            const tracks = await response.json();
 
-            // Get all tracks and shuffle them
-            let tracks = [...data.items];
-
-            // Shuffle array
-            for (let i = tracks.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
-            }
-
-            // Limit to 8 tracks and format the response
-            return tracks.slice(0, 8).map(track => ({
-                id: `youtube-${track.id}`,
+            // Format the tracks for our player
+            return tracks.map(track => ({
+                id: track.id,
                 title: track.title,
-                artist: track.channelTitle,
-                album: 'YouTube Music',
-                cover: track.thumbnail || `https://picsum.photos/seed/youtube${track.id}/300/300`,
-                preview: null, // YouTube videos need to be embedded, not directly played
-                embedUrl: `https://www.youtube.com/embed/${track.id}?autoplay=1`,
-                sourceType: 'youtube'
+                artist: track.artist,
+                album: track.album || 'YouTube Music',
+                cover: track.cover || `https://picsum.photos/seed/ytmusic${track.videoId}/300/300`,
+                preview: null, // YouTube Music tracks need to be embedded
+                embedUrl: `https://www.youtube.com/embed/${track.videoId}?autoplay=1`,
+                videoId: track.videoId,
+                sourceType: 'ytmusic'
             }));
 
         } catch (error) {
@@ -730,10 +721,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Filter tracks to only include those with working preview URLs or YouTube embeds
         const verifiedTracks = [];
 
-        // Add YouTube and Deezer tracks directly (they don't need verification)
+        // Add YouTube, YouTube Music, and Deezer tracks directly (they don't need verification)
         const youtubeTracks = tracks.filter(track => track.sourceType === 'youtube');
+        const ytmusicTracks = tracks.filter(track => track.sourceType === 'ytmusic');
         const deezerTracks = tracks.filter(track => track.sourceType === 'deezer');
-        verifiedTracks.push(...youtubeTracks, ...deezerTracks);
+        verifiedTracks.push(...youtubeTracks, ...ytmusicTracks, ...deezerTracks);
 
         // Process tracks with preview URLs
         const tracksWithPreviews = tracks.filter(track => track.preview && !track.sourceType);
@@ -817,6 +809,31 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 `;
+            } else if (track.sourceType === 'ytmusic') {
+                trackCard.innerHTML = `
+                    <div class="track-ytmusic-container">
+                        <img src="${track.cover}" alt="${track.title}" class="track-image ytmusic-thumbnail">
+                        <div class="ytmusic-play-overlay">
+                            <i class="fas fa-music"></i>
+                        </div>
+                    </div>
+                    <div class="track-info">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-artist">${track.artist}</div>
+                        <div class="track-album">${track.album}</div>
+                        <div class="track-controls">
+                            <button class="track-btn play-track" title="Play on YouTube Music">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="track-btn open-ytmusic" title="Open in YouTube Music">
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                            <button class="track-btn add-to-favorites" title="Add to favorites">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
             } else if (track.sourceType === 'deezer') {
                 trackCard.innerHTML = `
                     <div class="track-deezer-container">
@@ -876,6 +893,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const shareBtn = trackCard.querySelector('.share-track');
             if (shareBtn) {
                 shareBtn.addEventListener('click', () => shareTrack(track));
+            }
+
+            // Add YouTube Music-specific listeners
+            if (track.sourceType === 'ytmusic') {
+                const openYTMusicBtn = trackCard.querySelector('.open-ytmusic');
+                if (openYTMusicBtn) {
+                    openYTMusicBtn.addEventListener('click', () => {
+                        window.open(`https://music.youtube.com/watch?v=${track.videoId}`, '_blank');
+                    });
+                }
+
+                const thumbnail = trackCard.querySelector('.ytmusic-thumbnail');
+                const overlay = trackCard.querySelector('.ytmusic-play-overlay');
+
+                thumbnail.addEventListener('click', () => playTrack(track));
+                overlay.addEventListener('click', () => playTrack(track));
             }
 
             // Add Deezer-specific listeners
@@ -1032,6 +1065,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Handle YouTube Music tracks
+        if (track.sourceType === 'ytmusic') {
+            playYouTubeMusicTrack(track);
+            return;
+        }
+
         // Handle Deezer tracks
         if (track.sourceType === 'deezer') {
             playDeezerTrack(track);
@@ -1164,6 +1203,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show notification
         showNotification(`Playing YouTube: ${track.title} by ${track.artist}`);
+
+        // Set as currently playing
+        currentlyPlayingId = track.id;
+    }
+
+    // Function to play a YouTube Music track
+    function playYouTubeMusicTrack(track) {
+        // Get the video ID
+        const videoId = track.videoId;
+
+        // Create the iframe for the YouTube Music player
+        const playerContainer = document.getElementById('youtube-player-container');
+        playerContainer.innerHTML = `
+            <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1"
+                title="${track.title}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+            <div class="ytmusic-info">
+                <h3>${track.title}</h3>
+                <p>${track.artist}</p>
+                <p>${track.album}</p>
+                <a href="https://music.youtube.com/watch?v=${videoId}" target="_blank" class="ytmusic-link-btn">
+                    Open in YouTube Music
+                </a>
+            </div>
+        `;
+
+        // Show the YouTube modal
+        youtubeModal.style.display = 'flex';
+
+        // Update UI
+        updatePlayButtonUI(track.id, true);
+
+        // Show notification
+        showNotification(`Playing YouTube Music: ${track.title} by ${track.artist}`);
 
         // Set as currently playing
         currentlyPlayingId = track.id;
