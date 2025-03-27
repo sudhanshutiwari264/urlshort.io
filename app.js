@@ -359,6 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const searchTerm = moodToYTMusicMap[currentPlaylist.mood] || genre;
 
             // Call our server-side API that uses ytmusicapi
+            // Use relative path for Vercel deployment
             const response = await fetch(`/api/mood?mood=${searchTerm}&limit=8`);
 
             if (!response.ok) {

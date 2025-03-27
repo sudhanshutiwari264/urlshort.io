@@ -1,77 +1,89 @@
-# MoodTunes - AI-Powered Music Recommendation
+# Mood Music Player with YouTube Music API
 
-MoodTunes is an innovative web application that analyzes your mood from text input and generates personalized music playlists to match how you're feeling. Using natural language processing and music APIs, MoodTunes creates the perfect soundtrack for any emotional state.
+A web application that analyzes your mood from text input and creates personalized playlists using the YouTube Music API.
 
 ## Features
 
-- **Mood Analysis**: Advanced text analysis to determine your emotional state
-- **Personalized Playlists**: Get music recommendations tailored to your current mood
-- **QR Code Generation**: Generate QR codes for your playlists to share with friends
-- **Playlist Sharing**: Easily share your mood-based playlists on social media
-- **Responsive Design**: Works beautifully on all devices from mobile to desktop
-- **No Account Required**: Start using immediately with no sign-up process
+- Mood analysis from text input
+- YouTube Music API integration
+- Multi-source music playback
+- Responsive design
+- Personalized playlists
 
-## How It Works
+## Deployment on Vercel
 
-1. **Share Your Feelings**: Type how you're feeling or what's on your mind
-2. **AI Analysis**: Our algorithm analyzes your text to determine your emotional state
-3. **Generate Playlist**: We create a personalized playlist that matches your current mood
-4. **Enjoy & Share**: Listen to your playlist, save it for later, or share it with friends
+### Prerequisites
 
-## Technologies Used
+- [Vercel account](https://vercel.com/signup)
+- [Vercel CLI](https://vercel.com/download) (optional for local development)
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **APIs**: 
-  - Natural Language Processing for mood detection
-  - Music APIs for playlist generation
-  - QR Code generation
-- **Deployment**: Vercel for hosting and continuous deployment
+### Steps to Deploy
 
-## Deployment
+1. **Install Vercel CLI** (optional for local development)
+   ```bash
+   npm install -g vercel
+   ```
 
-This project is optimized for deployment on Vercel:
+2. **Login to Vercel**
+   ```bash
+   vercel login
+   ```
 
-1. Fork this repository
-2. Connect your Vercel account to your GitHub account
-3. Import the repository in Vercel
-4. Deploy with default settings
+3. **Deploy to Vercel**
+   ```bash
+   # Navigate to your project directory
+   cd your-project-directory
+   
+   # Deploy
+   vercel
+   ```
+
+4. **Configure Environment Variables** (if needed)
+   - Go to your project on the Vercel dashboard
+   - Navigate to Settings > Environment Variables
+   - Add any required environment variables
+
+5. **Production Deployment**
+   ```bash
+   vercel --prod
+   ```
+
+### Alternative: Deploy via GitHub
+
+1. Push your code to a GitHub repository
+2. Import your project on Vercel dashboard
+3. Configure build settings if needed
+4. Deploy
 
 ## Local Development
 
-To run this project locally:
+1. **Install dependencies**
+   ```bash
+   pip install -r api/requirements.txt
+   ```
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/moodtunes.git
+2. **Run the Flask server**
+   ```bash
+   cd api
+   python index.py
+   ```
 
-# Navigate to the project directory
-cd moodtunes
+3. **Open in browser**
+   Open http://localhost:5000 in your web browser
 
-# Open the project in your browser
-# You can use any local server, for example:
-npx serve
-```
+## Project Structure
 
-## Future Enhancements
+- `api/index.py` - Flask server with YouTube Music API integration
+- `app.js` - Frontend JavaScript
+- `index.html` - Main HTML file
+- `styles.css` - CSS styles
+- `vercel.json` - Vercel configuration
+- `public-music-data/` - Sample music data
 
-- User accounts to save favorite playlists
-- Integration with music streaming services like Spotify
-- More detailed mood analysis with sentiment intensity
-- Customizable playlist length and genre preferences
-- Mood tracking over time with visualizations
+## Technologies Used
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Author
-
-Created by Sudhanshu Tiwari
-
-- Twitter/X: [@sudhanshusX](https://x.com/sudhanshusX)
-- LinkedIn: [tiwari-sudhanshu](https://www.linkedin.com/in/tiwari-sudhanshu/)
-- GitHub: [sudhanshutiwari264](https://github.com/sudhanshutiwari264)
+- YouTube Music API (ytmusicapi)
+- Flask
+- JavaScript
+- HTML/CSS
+- Vercel for deployment
