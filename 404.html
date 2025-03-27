@@ -137,10 +137,21 @@
                 urlDatabase[shortCode].clicks++;
                 saveUrlDatabase(urlDatabase);
 
-                // Redirect to the long URL after a short delay
-                setTimeout(() => {
-                    window.location.href = urlDatabase[shortCode].longUrl;
-                }, 1500);
+                // Check if the URL is valid before redirecting
+                try {
+                    // Make sure the URL is valid
+                    new URL(urlDatabase[shortCode].longUrl);
+
+                    // Redirect to the long URL after a short delay
+                    setTimeout(() => {
+                        window.location.href = urlDatabase[shortCode].longUrl;
+                    }, 1500);
+                } catch (e) {
+                    // If the URL is invalid, show an error
+                    document.getElementById('redirect-message').style.display = 'none';
+                    document.getElementById('not-found-message').style.display = 'block';
+                    document.getElementById('not-found-message').innerHTML = '<p class="message">Error: The destination URL is invalid.</p><a href="/" class="home-link">Go to Homepage</a>';
+                }
             } else {
                 // Show not found message if the link doesn't exist
                 document.getElementById('redirect-message').style.display = 'none';

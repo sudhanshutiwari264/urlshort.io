@@ -19,7 +19,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set the domain prefix based on GitHub Pages URL format
     // For a project site, the format is https://{username}.github.io/{repository}/?s=
     const githubPagesUrl = "https://sudhanshutiwari264.github.io/shortner/?s=";
-    domainPrefixElement.textContent = githubPagesUrl;
+    domainPrefixElement.textContent = getBaseUrl();
+    domainPrefixElement.title = getBaseUrl();
+
+    // Function to detect if we're on a custom domain
+    function getBaseUrl() {
+        // If we're on a custom domain, use that instead of the GitHub Pages URL
+        if (window.location.hostname !== "sudhanshutiwari264.github.io") {
+            return `${window.location.protocol}//${window.location.host}/?s=`;
+        }
+        return githubPagesUrl;
+    }
+
+    // Get the actual base URL to use
+    const actualBaseUrl = getBaseUrl();
 
     // URL data storage
     let urlDatabase = {};
@@ -155,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveUrlDatabase();
         
         // Generate the short URL
-        const shortUrl = `${githubPagesUrl}${customPath}`;
+        const shortUrl = `${actualBaseUrl}${customPath}`;
 
         // Display the result
         shortUrlInput.value = shortUrl;
@@ -271,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .slice(0, 5); // Show only the 5 most recent
         
         sortedLinks.forEach(([path, data]) => {
-            const shortUrl = `${githubPagesUrl}${path}`;
+            const shortUrl = `${actualBaseUrl}${path}`;
             
             const linkItem = document.createElement('div');
             linkItem.className = 'link-item';
