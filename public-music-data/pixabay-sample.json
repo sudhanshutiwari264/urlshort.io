@@ -1,0 +1,238 @@
+{
+  "hits": [
+    {
+      "id": "1",
+      "title": "Happy Upbeat Ukulele",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3"
+    },
+    {
+      "id": "2",
+      "title": "Relaxing Ambient",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8e9124485.mp3"
+    },
+    {
+      "id": "3",
+      "title": "Sad Piano",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/27/audio_d0c19a4f4d.mp3"
+    },
+    {
+      "id": "4",
+      "title": "Energetic Electronic",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/03/10/audio_1a609013c8.mp3"
+    },
+    {
+      "id": "5",
+      "title": "Focus Music",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2021/11/25/audio_5c6b20d881.mp3"
+    },
+    {
+      "id": "6",
+      "title": "Happy Acoustic",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/03/19/audio_c8e2e367a7.mp3"
+    },
+    {
+      "id": "7",
+      "title": "Upbeat Pop",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/10/25/audio_946b34eaf9.mp3"
+    },
+    {
+      "id": "8",
+      "title": "Cheerful Ukulele",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3"
+    },
+    {
+      "id": "9",
+      "title": "Happy Folk",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/11/22/audio_de7d47feb0.mp3"
+    },
+    {
+      "id": "10",
+      "title": "Energetic Dance",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe58f49.mp3"
+    },
+    {
+      "id": "11",
+      "title": "Exciting Electronic",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/10/30/audio_f1fa483f9b.mp3"
+    },
+    {
+      "id": "12",
+      "title": "Upbeat Energetic",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/09/02/audio_69db1d6e01.mp3"
+    },
+    {
+      "id": "13",
+      "title": "Exciting Beat",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/20/audio_bae2b7b68d.mp3"
+    },
+    {
+      "id": "14",
+      "title": "Calm Ambient",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2021/11/13/audio_cb4f1212a9.mp3"
+    },
+    {
+      "id": "15",
+      "title": "Peaceful Piano",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/04/27/audio_c52cf6f4c5.mp3"
+    },
+    {
+      "id": "16",
+      "title": "Relaxing Melody",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_e92fe2aa6c.mp3"
+    },
+    {
+      "id": "17",
+      "title": "Calm Acoustic",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/25/audio_9cc82a4773.mp3"
+    },
+    {
+      "id": "18",
+      "title": "Melancholy Piano",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2021/11/25/audio_00fa5593f1.mp3"
+    },
+    {
+      "id": "19",
+      "title": "Emotional Strings",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/02/07/audio_d0c3b3e428.mp3"
+    },
+    {
+      "id": "20",
+      "title": "Sad Acoustic",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/02/11/audio_8fad8a8e1e.mp3"
+    },
+    {
+      "id": "21",
+      "title": "Melancholy Melody",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/02/28/audio_c9b7d810d5.mp3"
+    },
+    {
+      "id": "22",
+      "title": "Powerful Rock",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/10/16/audio_f52af083e2.mp3"
+    },
+    {
+      "id": "23",
+      "title": "Intense Electronic",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/09/18/audio_a4d4a8be7f.mp3"
+    },
+    {
+      "id": "24",
+      "title": "Strong Beat",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/08/23/audio_3b6a08e578.mp3"
+    },
+    {
+      "id": "25",
+      "title": "Powerful Drums",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/07/04/audio_ae1d2b08c7.mp3"
+    },
+    {
+      "id": "26",
+      "title": "Intense Beat",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/05/13/audio_a8a0b1b7f4.mp3"
+    },
+    {
+      "id": "27",
+      "title": "Soft Ambient",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/21/audio_31743c6c02.mp3"
+    },
+    {
+      "id": "28",
+      "title": "Calm Meditation",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2021/11/01/audio_cb4c8bcf7f.mp3"
+    },
+    {
+      "id": "29",
+      "title": "Soft Piano",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/20/audio_1d2f9a3d4e.mp3"
+    },
+    {
+      "id": "30",
+      "title": "Calm Strings",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/02/11/audio_c6b0d2f1e5.mp3"
+    },
+    {
+      "id": "31",
+      "title": "Focus Ambient",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/13/audio_3b6c767d23.mp3"
+    },
+    {
+      "id": "32",
+      "title": "Concentration Music",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/03/07/audio_40a06cc3c7.mp3"
+    },
+    {
+      "id": "33",
+      "title": "Focus Piano",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/04/04/audio_0428e7e8e8.mp3"
+    },
+    {
+      "id": "34",
+      "title": "Calm Focus",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/04/08/audio_8f2c346ba4.mp3"
+    },
+    {
+      "id": "35",
+      "title": "Romantic Piano",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_e92fe2aa6c.mp3"
+    },
+    {
+      "id": "36",
+      "title": "Love Ballad",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/02/11/audio_8fad8a8e1e.mp3"
+    },
+    {
+      "id": "37",
+      "title": "Romantic Acoustic",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/03/19/audio_c8e2e367a7.mp3"
+    },
+    {
+      "id": "38",
+      "title": "Emotional Piano",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/27/audio_d0c19a4f4d.mp3"
+    },
+    {
+      "id": "39",
+      "title": "Love Song",
+      "user": "Pixabay Artist",
+      "audio": "https://cdn.pixabay.com/download/audio/2022/01/25/audio_9cc82a4773.mp3"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const moodInput = document.getElementById('mood-input');
     const analyzeBtn = document.getElementById('analyze-btn');
@@ -7,115 +7,96 @@ document.addEventListener('DOMContentLoaded', () => {
     const moodTitle = document.getElementById('mood-title');
     const moodDescription = document.getElementById('mood-description');
     const tracksContainer = document.getElementById('tracks-container');
+    const playAllBtn = document.getElementById('play-all');
+    const shuffleBtn = document.getElementById('shuffle');
+    const sharePlaylistBtn = document.getElementById('share-playlist');
+    const generateQRBtn = document.getElementById('generate-qr');
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
     const shareModal = document.getElementById('share-modal');
-    const sharePlaylistBtn = document.getElementById('share-playlist');
-    const closeModalBtn = document.querySelector('.close-modal');
+    const closeShareModal = document.getElementById('close-share-modal');
     const shareLink = document.getElementById('share-link');
     const copyLinkBtn = document.getElementById('copy-link-btn');
-    const playAllBtn = document.getElementById('play-all');
-    const savePlaylistBtn = document.getElementById('save-playlist');
-
-    // Mood configurations with corresponding emojis, descriptions, and music genres
-    const moodConfigs = {
-        happy: {
-            emoji: '😊',
-            title: 'Happy & Upbeat',
-            description: 'You\'re feeling positive and cheerful! Here\'s a playlist to match your upbeat mood.',
-            genres: ['pop', 'happy', 'feel-good', 'upbeat'],
-            color: '#fdcb6e'
-        },
-        excited: {
-            emoji: '🤩',
-            title: 'Excited & Energetic',
-            description: 'You\'re bursting with energy and excitement! This playlist will keep your enthusiasm going.',
-            genres: ['dance', 'electronic', 'party', 'edm'],
-            color: '#ff7675'
-        },
-        relaxed: {
-            emoji: '😌',
-            title: 'Calm & Relaxed',
-            description: 'You\'re feeling peaceful and relaxed. These tracks will help maintain your tranquil state.',
-            genres: ['chill', 'ambient', 'acoustic', 'lofi'],
-            color: '#74b9ff'
-        },
-        sad: {
-            emoji: '😢',
-            title: 'Melancholic & Reflective',
-            description: 'You\'re feeling a bit down. This playlist offers comfort and emotional resonance.',
-            genres: ['sad', 'emotional', 'indie', 'ballad'],
-            color: '#a29bfe'
-        },
-        angry: {
-            emoji: '😠',
-            title: 'Intense & Powerful',
-            description: 'You\'re feeling intense emotions. Channel that energy with this powerful playlist.',
-            genres: ['rock', 'metal', 'intense', 'workout'],
-            color: '#d63031'
-        },
-        tired: {
-            emoji: '😴',
-            title: 'Tired & Mellow',
-            description: 'You\'re feeling low on energy. These gentle tracks will provide a soothing backdrop.',
-            genres: ['sleep', 'ambient', 'piano', 'background'],
-            color: '#0984e3'
-        },
-        focused: {
-            emoji: '🧠',
-            title: 'Focused & Productive',
-            description: 'You\'re in a productive mindset. This playlist will help maintain your concentration.',
-            genres: ['focus', 'instrumental', 'study', 'concentration'],
-            color: '#00b894'
-        },
-        romantic: {
-            emoji: '❤️',
-            title: 'Romantic & Loving',
-            description: 'You\'re feeling romantic and affectionate. Enjoy these love-inspired tracks.',
-            genres: ['love', 'romantic', 'r&b', 'soul'],
-            color: '#e84393'
-        }
-    };
-
-    // Keywords associated with each mood
-    const moodKeywords = {
-        happy: ['happy', 'joy', 'cheerful', 'great', 'wonderful', 'fantastic', 'delighted', 'pleased', 'glad', 'content', 'satisfied', 'thrilled', 'excited', 'good', 'positive', 'awesome', 'amazing', 'excellent', 'ecstatic', 'elated'],
-        excited: ['excited', 'thrilled', 'enthusiastic', 'eager', 'energetic', 'pumped', 'hyped', 'stoked', 'amped', 'psyched', 'animated', 'lively', 'spirited', 'vibrant', 'dynamic', 'exhilarated', 'fired up', 'passionate'],
-        relaxed: ['relaxed', 'calm', 'peaceful', 'tranquil', 'serene', 'chill', 'mellow', 'laid-back', 'easy-going', 'composed', 'collected', 'untroubled', 'placid', 'quiet', 'still', 'zen', 'soothing', 'gentle'],
-        sad: ['sad', 'unhappy', 'depressed', 'down', 'blue', 'gloomy', 'melancholy', 'somber', 'sorrowful', 'miserable', 'heartbroken', 'upset', 'disappointed', 'dejected', 'downcast', 'despondent', 'disheartened', 'grief', 'mourning'],
-        angry: ['angry', 'mad', 'furious', 'irritated', 'annoyed', 'frustrated', 'enraged', 'outraged', 'irate', 'incensed', 'indignant', 'exasperated', 'heated', 'infuriated', 'provoked', 'resentful', 'hostile', 'bitter'],
-        tired: ['tired', 'exhausted', 'fatigued', 'weary', 'drained', 'sleepy', 'drowsy', 'lethargic', 'worn out', 'spent', 'burned out', 'beat', 'dead tired', 'knackered', 'bushed', 'pooped', 'wiped out'],
-        focused: ['focused', 'concentrated', 'determined', 'productive', 'efficient', 'diligent', 'attentive', 'alert', 'sharp', 'engaged', 'absorbed', 'immersed', 'dedicated', 'committed', 'studious', 'industrious', 'working'],
-        romantic: ['love', 'romantic', 'affectionate', 'passionate', 'intimate', 'tender', 'loving', 'adoring', 'fond', 'smitten', 'infatuated', 'enamored', 'devoted', 'attracted', 'charmed', 'enchanted', 'relationship', 'date']
-    };
+    const qrModal = document.getElementById('qr-modal');
+    const closeQRModal = document.getElementById('close-qr-modal');
+    const qrCodeContainer = document.getElementById('qr-code-container');
+    const downloadQRBtn = document.getElementById('download-qr');
 
     // Current playlist data
-    let currentPlaylist = {
+    const currentPlaylist = {
         mood: '',
         tracks: []
     };
 
+    // Mood configurations
+    const moodConfigs = {
+        happy: {
+            emoji: '😊',
+            title: 'Happy',
+            description: 'You\'re feeling positive and upbeat. Here\'s a playlist to match your happy mood!',
+            genres: ['pop', 'happy', 'upbeat']
+        },
+        excited: {
+            emoji: '🤩',
+            title: 'Excited',
+            description: 'You\'re feeling energetic and enthusiastic. This playlist will keep your energy high!',
+            genres: ['electronic', 'dance', 'upbeat']
+        },
+        relaxed: {
+            emoji: '😌',
+            title: 'Relaxed',
+            description: 'You\'re feeling calm and peaceful. Enjoy this soothing playlist to maintain your tranquility.',
+            genres: ['ambient', 'chill', 'acoustic']
+        },
+        sad: {
+            emoji: '😢',
+            title: 'Sad',
+            description: 'You\'re feeling down today. This playlist might help you process your emotions.',
+            genres: ['ballad', 'sad', 'emotional']
+        },
+        angry: {
+            emoji: '😠',
+            title: 'Angry',
+            description: 'You\'re feeling frustrated or angry. This playlist might help you release some tension.',
+            genres: ['rock', 'metal', 'intense']
+        },
+        tired: {
+            emoji: '😴',
+            title: 'Tired',
+            description: 'You\'re feeling low on energy. Here\'s some gentle music to help you relax and recharge.',
+            genres: ['ambient', 'soft', 'calm']
+        },
+        focused: {
+            emoji: '🧠',
+            title: 'Focused',
+            description: 'You\'re in a productive mindset. This playlist will help you maintain concentration.',
+            genres: ['instrumental', 'focus', 'concentration']
+        },
+        romantic: {
+            emoji: '❤️',
+            title: 'Romantic',
+            description: 'You\'re feeling romantic and emotional. Enjoy these love-inspired tracks.',
+            genres: ['love', 'romantic', 'emotional']
+        }
+    };
+
     // Event Listeners
     analyzeBtn.addEventListener('click', analyzeMood);
-    sharePlaylistBtn.addEventListener('click', openShareModal);
-    closeModalBtn.addEventListener('click', closeShareModal);
-    copyLinkBtn.addEventListener('click', copyShareLink);
     playAllBtn.addEventListener('click', playAllTracks);
-    savePlaylistBtn.addEventListener('click', savePlaylist);
+    shuffleBtn.addEventListener('click', shuffleTracks);
+    sharePlaylistBtn.addEventListener('click', openShareModal);
+    generateQRBtn.addEventListener('click', openQRModal);
+    closeShareModal.addEventListener('click', () => shareModal.style.display = 'none');
+    closeQRModal.addEventListener('click', () => qrModal.style.display = 'none');
+    copyLinkBtn.addEventListener('click', copyShareLink);
+    downloadQRBtn.addEventListener('click', downloadQRCode);
 
-    // Close modal when clicking outside of it
-    window.addEventListener('click', (e) => {
-        if (e.target === shareModal) {
-            closeShareModal();
-        }
-    });
-
-    // Function to analyze mood from text input
-    async function analyzeMood() {
+    // Function to analyze mood from input text
+    function analyzeMood() {
         const text = moodInput.value.trim();
         
         if (!text) {
-            showNotification('Please describe your mood first!', true);
+            showNotification('Please enter how you\'re feeling first!', true);
             return;
         }
         
@@ -123,53 +104,55 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingOverlay.style.display = 'flex';
         loadingText.textContent = 'Analyzing your mood...';
         
-        try {
-            // Analyze text to determine mood
+        // Simulate API call delay
+        setTimeout(() => {
+            // Determine mood based on text
             const mood = determineMood(text);
             
-            // Update mood display
-            updateMoodDisplay(mood);
-            
-            // Show loading message for playlist generation
-            loadingText.textContent = 'Creating your personalized playlist...';
+            // Update UI with mood
+            updateMoodUI(mood);
             
             // Generate playlist based on mood
-            await generatePlaylist(mood);
-            
-            // Hide loading overlay
-            loadingOverlay.style.display = 'none';
-            
-            // Show results section
-            resultsSection.style.display = 'block';
-            
-            // Scroll to results
-            resultsSection.scrollIntoView({ behavior: 'smooth' });
-            
-            // Save this mood to history
-            saveMoodToHistory(mood, text);
-            
-        } catch (error) {
-            console.error('Error:', error);
-            loadingOverlay.style.display = 'none';
-            showNotification('An error occurred. Please try again.', true);
-        }
+            generatePlaylist(mood).then(() => {
+                // Hide loading overlay
+                loadingOverlay.style.display = 'none';
+                
+                // Show results section
+                resultsSection.style.display = 'block';
+                
+                // Scroll to results
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            });
+        }, 1500);
     }
 
     // Function to determine mood from text
     function determineMood(text) {
         text = text.toLowerCase();
         
-        // Count occurrences of keywords for each mood
+        // Simple keyword matching for demo purposes
+        // In a real app, this would use a more sophisticated NLP model
+        
+        const moodKeywords = {
+            happy: ['happy', 'joy', 'glad', 'delighted', 'cheerful', 'content', 'pleased', 'thrilled', 'upbeat', 'positive'],
+            excited: ['excited', 'thrilled', 'enthusiastic', 'eager', 'energetic', 'pumped', 'psyched', 'stoked', 'amped'],
+            relaxed: ['relaxed', 'calm', 'peaceful', 'tranquil', 'serene', 'chill', 'mellow', 'zen', 'easy-going'],
+            sad: ['sad', 'unhappy', 'depressed', 'down', 'blue', 'gloomy', 'melancholy', 'heartbroken', 'upset', 'tearful'],
+            angry: ['angry', 'mad', 'furious', 'irritated', 'annoyed', 'frustrated', 'outraged', 'enraged', 'hostile'],
+            tired: ['tired', 'exhausted', 'sleepy', 'fatigued', 'drained', 'weary', 'worn out', 'lethargic'],
+            focused: ['focused', 'concentrated', 'productive', 'determined', 'attentive', 'diligent', 'studious', 'working'],
+            romantic: ['romantic', 'love', 'loving', 'affectionate', 'passionate', 'smitten', 'adoring', 'tender']
+        };
+        
+        // Count keyword matches for each mood
         const moodScores = {};
         
         for (const [mood, keywords] of Object.entries(moodKeywords)) {
             moodScores[mood] = 0;
             
             for (const keyword of keywords) {
-                // Check if the keyword is in the text
                 if (text.includes(keyword)) {
-                    // Add score based on the keyword match
-                    moodScores[mood] += 1;
+                    moodScores[mood]++;
                 }
             }
         }
@@ -185,43 +168,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // If no mood was detected strongly, use sentiment analysis for backup
-        if (highestScore === 0) {
-            // Simple sentiment analysis
-            const positiveWords = ['good', 'great', 'nice', 'love', 'happy', 'wonderful', 'excellent', 'amazing', 'fantastic', 'awesome'];
-            const negativeWords = ['bad', 'terrible', 'awful', 'hate', 'sad', 'angry', 'upset', 'disappointed', 'horrible', 'worst'];
-            
-            let positiveScore = 0;
-            let negativeScore = 0;
-            
-            for (const word of positiveWords) {
-                if (text.includes(word)) positiveScore++;
-            }
-            
-            for (const word of negativeWords) {
-                if (text.includes(word)) negativeScore++;
-            }
-            
-            if (positiveScore > negativeScore) {
-                detectedMood = 'happy';
-            } else if (negativeScore > positiveScore) {
-                detectedMood = 'sad';
-            }
-        }
+        // Store current mood
+        currentPlaylist.mood = detectedMood;
         
         return detectedMood;
     }
 
-    // Function to update mood display
-    function updateMoodDisplay(mood) {
+    // Function to update UI with mood
+    function updateMoodUI(mood) {
         const moodConfig = moodConfigs[mood];
         
         moodEmoji.textContent = moodConfig.emoji;
         moodTitle.textContent = moodConfig.title;
         moodDescription.textContent = moodConfig.description;
-        
-        // Update emoji background color
-        moodEmoji.style.backgroundColor = moodConfig.color;
         
         // Store current mood
         currentPlaylist.mood = mood;
@@ -230,21 +189,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to generate playlist based on mood
     async function generatePlaylist(mood) {
         const moodConfig = moodConfigs[mood];
-
+        
         // Clear previous tracks
         tracksContainer.innerHTML = '';
         currentPlaylist.tracks = [];
-
+        
         try {
-            // Get tracks from Deezer API (via RapidAPI)
+            // Get tracks from API
             const tracks = await fetchTracksFromAPI(moodConfig.genres);
-
+            
             // Display tracks (this is now async)
             await displayTracks(tracks);
-
+            
         } catch (error) {
             console.error('Error generating playlist:', error);
-
+            
             // Fallback to mock data if API fails
             const mockTracks = generateMockTracks(mood);
             await displayTracks(mockTracks);
@@ -255,117 +214,202 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchTracksFromAPI(genres) {
         // Randomly select one of the genres
         const randomGenre = genres[Math.floor(Math.random() * genres.length)];
-
+        
         try {
-            // First try to fetch from Spotify API
+            // Try to fetch from Free Music Archive
             try {
-                const spotifyTracks = await fetchFromSpotify(randomGenre);
-                if (spotifyTracks && spotifyTracks.length > 0) {
-                    return spotifyTracks;
+                const fmaTracks = await fetchFromFreeMusicArchive(randomGenre);
+                if (fmaTracks && fmaTracks.length > 0) {
+                    return fmaTracks;
                 }
-            } catch (spotifyError) {
-                console.warn('Spotify API error, falling back to Jamendo:', spotifyError);
+            } catch (fmaError) {
+                console.warn('Free Music Archive error, trying next source:', fmaError);
             }
-
-            // Then try Jamendo API
+            
+            // Try to fetch from Pixabay
             try {
-                const jamendoTracks = await fetchFromJamendo(randomGenre);
-                if (jamendoTracks && jamendoTracks.length > 0) {
-                    return jamendoTracks;
+                const pixabayTracks = await fetchFromPixabay(randomGenre);
+                if (pixabayTracks && pixabayTracks.length > 0) {
+                    return pixabayTracks;
                 }
-            } catch (jamendoError) {
-                console.warn('Jamendo API error, falling back to mock data:', jamendoError);
+            } catch (pixabayError) {
+                console.warn('Pixabay API error, trying next source:', pixabayError);
             }
-
-            // If both APIs fail, use mock data
-            return generateMockTracks(currentPlaylist.mood);
-
+            
+            // Try to fetch from ccMixter
+            try {
+                const ccMixterTracks = await fetchFromCCMixter(randomGenre);
+                if (ccMixterTracks && ccMixterTracks.length > 0) {
+                    return ccMixterTracks;
+                }
+            } catch (ccMixterError) {
+                console.warn('ccMixter API error, falling back to guaranteed tracks:', ccMixterError);
+            }
+            
+            // If all APIs fail, use guaranteed tracks
+            return generateGuaranteedTracks(currentPlaylist.mood, 8);
+            
         } catch (error) {
             console.error('API Error:', error);
             throw error;
         }
     }
 
-    // Function to fetch tracks from Spotify
-    async function fetchFromSpotify(genre) {
-        // Spotify API credentials - in a real app, these would be secured on a server
-        // For demo purposes only - you should NEVER expose these in client-side code
-        const clientId = '1a2b3c4d5e6f7g8h9i0j';  // Replace with your actual client ID
-        const clientSecret = '1a2b3c4d5e6f7g8h9i0j'; // Replace with your actual client secret
-
+    // Function to fetch tracks from Free Music Archive
+    async function fetchFromFreeMusicArchive(genre) {
         try {
-            // Get access token
-            const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret)
-                },
-                body: 'grant_type=client_credentials'
-            });
-
-            if (!tokenResponse.ok) {
-                throw new Error('Failed to get Spotify access token');
+            // Map our genre to FMA genre tags
+            const genreMap = {
+                'pop': 'Pop',
+                'rock': 'Rock',
+                'electronic': 'Electronic',
+                'classical': 'Classical',
+                'jazz': 'Jazz',
+                'hip-hop': 'Hip-Hop',
+                'ambient': 'Ambient',
+                'folk': 'Folk',
+                'indie': 'Indie'
+            };
+            
+            const fmaGenre = genreMap[genre.toLowerCase()] || genre;
+            
+            // Use the local JSON file
+            const response = await fetch('/public-music-data/fma-sample.json');
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch from Free Music Archive');
             }
-
-            const tokenData = await tokenResponse.json();
-            const accessToken = tokenData.access_token;
-
-            // Search for tracks by genre
-            const searchResponse = await fetch(`https://api.spotify.com/v1/search?q=genre:${genre}&type=track&limit=8`, {
-                headers: {
-                    'Authorization': 'Bearer ' + accessToken
-                }
-            });
-
-            if (!searchResponse.ok) {
-                throw new Error('Failed to search Spotify tracks');
+            
+            const data = await response.json();
+            
+            // Filter by genre if possible
+            let tracks = data.tracks;
+            if (fmaGenre) {
+                tracks = tracks.filter(track => 
+                    track.genre && track.genre.toLowerCase().includes(fmaGenre.toLowerCase())
+                );
             }
-
-            const searchData = await searchResponse.json();
-
-            // Format the response
-            return searchData.tracks.items.map(track => ({
-                id: track.id,
-                title: track.name,
-                artist: track.artists[0].name,
-                album: track.album.name,
-                cover: track.album.images[0].url,
-                preview: track.preview_url
+            
+            // If no tracks match the genre, use all tracks
+            if (tracks.length === 0) {
+                tracks = data.tracks;
+            }
+            
+            // Limit to 8 tracks and format the response
+            return tracks.slice(0, 8).map(track => ({
+                id: `fma-${track.id}`,
+                title: track.title,
+                artist: track.artist,
+                album: track.album || 'Unknown Album',
+                cover: track.cover || 'https://picsum.photos/seed/fma' + track.id + '/300/300',
+                preview: track.audio_url
             }));
-
+            
         } catch (error) {
-            console.error('Spotify API error:', error);
+            console.error('Free Music Archive error:', error);
             throw error;
         }
     }
 
-    // Function to fetch tracks from Jamendo
-    async function fetchFromJamendo(genre) {
-        // Jamendo API client ID - in a real app, this would be secured
-        const clientId = 'your_jamendo_client_id'; // Replace with your actual client ID
-
+    // Function to fetch tracks from Pixabay
+    async function fetchFromPixabay(genre) {
         try {
-            const response = await fetch(`https://api.jamendo.com/v3.0/tracks/?client_id=${clientId}&format=json&limit=8&tags=${genre}`);
-
+            // Map our genre to Pixabay search terms
+            const moodToPixabayMap = {
+                'happy': 'happy upbeat cheerful',
+                'excited': 'energetic upbeat exciting',
+                'relaxed': 'calm relaxing peaceful',
+                'sad': 'sad melancholy emotional',
+                'angry': 'intense powerful strong',
+                'tired': 'ambient calm soft',
+                'focused': 'concentration focus calm',
+                'romantic': 'romantic love emotional'
+            };
+            
+            // Use the current mood for better results
+            const searchTerm = moodToPixabayMap[currentPlaylist.mood] || genre;
+            
+            // Use the local JSON file
+            const response = await fetch('/public-music-data/pixabay-sample.json');
+            
             if (!response.ok) {
-                throw new Error('Failed to fetch from Jamendo API');
+                throw new Error('Failed to fetch from Pixabay');
             }
-
+            
             const data = await response.json();
-
-            // Format the response
-            return data.results.map(track => ({
-                id: track.id,
-                title: track.name,
-                artist: track.artist_name,
-                album: track.album_name,
-                cover: track.album_image,
+            
+            // Get all tracks and shuffle them
+            let tracks = [...data.hits];
+            
+            // Shuffle array
+            for (let i = tracks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+            }
+            
+            // Limit to 8 tracks and format the response
+            return tracks.slice(0, 8).map(track => ({
+                id: `pixabay-${track.id}`,
+                title: track.title || 'Pixabay Track',
+                artist: track.user || 'Pixabay Artist',
+                album: 'Pixabay Music',
+                cover: `https://picsum.photos/seed/pixabay${track.id}/300/300`,
                 preview: track.audio
             }));
-
+            
         } catch (error) {
-            console.error('Jamendo API error:', error);
+            console.error('Pixabay API error:', error);
+            throw error;
+        }
+    }
+
+    // Function to fetch tracks from ccMixter
+    async function fetchFromCCMixter(genre) {
+        try {
+            // Map our genre to ccMixter tags
+            const genreMap = {
+                'pop': 'pop',
+                'rock': 'rock',
+                'electronic': 'electronic',
+                'classical': 'classical',
+                'jazz': 'jazz',
+                'hip-hop': 'hip_hop',
+                'ambient': 'ambient',
+                'folk': 'folk'
+            };
+            
+            const ccMixterTag = genreMap[genre.toLowerCase()] || genre;
+            
+            // Use the local JSON file
+            const response = await fetch('/public-music-data/ccmixter-sample.json');
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch from ccMixter');
+            }
+            
+            const data = await response.json();
+            
+            // Get all tracks and shuffle them
+            let tracks = [...data.tracks];
+            
+            // Shuffle array
+            for (let i = tracks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+            }
+            
+            // Limit to 8 tracks and format the response
+            return tracks.slice(0, 8).map(track => ({
+                id: `ccmixter-${track.id}`,
+                title: track.title || 'ccMixter Track',
+                artist: track.artist || 'ccMixter Artist',
+                album: track.album || 'ccMixter',
+                cover: track.cover || `https://picsum.photos/seed/ccmixter${track.id}/300/300`,
+                preview: track.audio_url
+            }));
+            
+        } catch (error) {
+            console.error('ccMixter API error:', error);
             throw error;
         }
     }
@@ -374,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateMockTracks(mood) {
         const moodConfig = moodConfigs[mood];
         const tracks = [];
-
+        
         // Mock track data based on mood
         const mockArtists = {
             happy: ['Pharrell Williams', 'Justin Timberlake', 'Katy Perry', 'Bruno Mars', 'Taylor Swift'],
@@ -386,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
             focused: ['Hans Zimmer', 'Mozart', 'Bach', 'Explosions in the Sky', 'Tycho'],
             romantic: ['Ed Sheeran', 'John Legend', 'Beyoncé', 'Frank Sinatra', 'Marvin Gaye']
         };
-
+        
         const mockSongs = {
             happy: ['Happy', 'Can\'t Stop the Feeling', 'Uptown Funk', 'Good as Hell', 'Walking on Sunshine'],
             excited: ['Titanium', 'Don\'t You Worry Child', 'Levels', 'Closer', 'Wake Me Up'],
@@ -397,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
             focused: ['Time', 'Piano Concerto No. 21', 'Air on the G String', 'Your Hand in Mine', 'Awake'],
             romantic: ['Perfect', 'All of Me', 'Halo', 'The Way You Look Tonight', 'Let\'s Stay Together']
         };
-
+        
         // Royalty-free music samples from Pixabay for demo purposes
         // These are mapped to different moods
         const moodPreviews = {
@@ -458,15 +502,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 'https://cdn.pixabay.com/download/audio/2022/01/25/audio_9cc82a4773.mp3'
             ]
         };
-
+        
         // Generate 8 mock tracks
         for (let i = 0; i < 8; i++) {
             const artistIndex = i % 5;
             const songIndex = i % 5;
-
+            
             // Get a preview URL for this mood
             const previewUrl = moodPreviews[mood][i % 5];
-
+            
             tracks.push({
                 id: `mock-${mood}-${i}`,
                 title: mockSongs[mood][songIndex],
@@ -476,54 +520,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 preview: previewUrl // Actual preview URL from Pixabay (royalty-free)
             });
         }
-
+        
         return tracks;
     }
 
     // Function to display tracks in the UI
     async function displayTracks(tracks) {
         tracksContainer.innerHTML = '';
-
+        
         // Show loading message while we verify tracks
         const loadingMessage = document.createElement('div');
         loadingMessage.className = 'tracks-loading-message';
         loadingMessage.textContent = 'Verifying playable tracks...';
         tracksContainer.appendChild(loadingMessage);
-
+        
         // Filter tracks to only include those with working preview URLs
         const verifiedTracks = [];
-
+        
         // First, add all tracks that have preview URLs from our mock data
         // These are guaranteed to work since we control them
         const tracksWithPreviews = tracks.filter(track => track.preview);
-
+        
         // For each track with a preview, verify it's playable
         for (const track of tracksWithPreviews) {
             try {
                 // Try to create an audio element and load the metadata
                 const audio = new Audio();
-
+                
                 // Create a promise that resolves when metadata is loaded or errors
                 const canPlay = new Promise((resolve, reject) => {
                     audio.addEventListener('loadedmetadata', () => resolve(true));
                     audio.addEventListener('error', () => reject(new Error('Cannot play audio')));
-
+                    
                     // Set a timeout in case the audio takes too long to load
                     setTimeout(() => reject(new Error('Audio load timeout')), 3000);
                 });
-
+                
                 // Set the source and start loading
                 audio.src = track.preview;
                 audio.load();
-
+                
                 // Wait for the audio to be verified
                 await canPlay;
-
+                
                 // If we get here, the audio is playable
                 verifiedTracks.push(track);
             } catch (error) {
                 console.warn(`Track "${track.title}" preview not playable:`, error);
-
+                
                 // If the original preview doesn't work, assign a guaranteed working preview
                 const fallbackPreview = getGuaranteedPreview(track.id, currentPlaylist.mood);
                 if (fallbackPreview) {
@@ -532,25 +576,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
-
+        
         // If we don't have enough verified tracks, add some guaranteed ones
         if (verifiedTracks.length < 5) {
             const guaranteedTracks = generateGuaranteedTracks(currentPlaylist.mood, 8 - verifiedTracks.length);
             verifiedTracks.push(...guaranteedTracks);
         }
-
+        
         // Update the current playlist with verified tracks
         currentPlaylist.tracks = verifiedTracks;
-
+        
         // Remove loading message
         tracksContainer.innerHTML = '';
-
+        
         // Display the verified tracks
         verifiedTracks.forEach(track => {
             const trackCard = document.createElement('div');
             trackCard.className = 'track-card';
             trackCard.dataset.trackId = track.id;
-
+            
             trackCard.innerHTML = `
                 <img src="${track.cover}" alt="${track.title}" class="track-image">
                 <div class="track-info">
@@ -569,14 +613,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-
+            
             tracksContainer.appendChild(trackCard);
-
+            
             // Add event listeners to track buttons
             const playBtn = trackCard.querySelector('.play-track');
             const favoriteBtn = trackCard.querySelector('.add-to-favorites');
             const shareBtn = trackCard.querySelector('.share-track');
-
+            
             playBtn.addEventListener('click', () => playTrack(track));
             favoriteBtn.addEventListener('click', (e) => toggleFavorite(e, track));
             shareBtn.addEventListener('click', () => shareTrack(track));
@@ -593,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1a609013c8.mp3', // Energetic
             'https://cdn.pixabay.com/download/audio/2021/11/25/audio_5c6b20d881.mp3'  // Focused
         ];
-
+        
         // Use the track ID to deterministically select a preview
         const hash = trackId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
         return guaranteedPreviews[hash % guaranteedPreviews.length];
@@ -603,7 +647,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateGuaranteedTracks(mood, count) {
         const tracks = [];
         const moodConfig = moodConfigs[mood];
-
+        
         // Mock track data based on mood
         const mockArtists = {
             happy: ['Pharrell Williams', 'Justin Timberlake', 'Katy Perry', 'Bruno Mars', 'Taylor Swift'],
@@ -615,7 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
             focused: ['Hans Zimmer', 'Mozart', 'Bach', 'Explosions in the Sky', 'Tycho'],
             romantic: ['Ed Sheeran', 'John Legend', 'Beyoncé', 'Frank Sinatra', 'Marvin Gaye']
         };
-
+        
         const mockSongs = {
             happy: ['Happy', 'Can\'t Stop the Feeling', 'Uptown Funk', 'Good as Hell', 'Walking on Sunshine'],
             excited: ['Titanium', 'Don\'t You Worry Child', 'Levels', 'Closer', 'Wake Me Up'],
@@ -626,7 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
             focused: ['Time', 'Piano Concerto No. 21', 'Air on the G String', 'Your Hand in Mine', 'Awake'],
             romantic: ['Perfect', 'All of Me', 'Halo', 'The Way You Look Tonight', 'Let\'s Stay Together']
         };
-
+        
         // Guaranteed working preview URLs from Pixabay
         const guaranteedPreviews = [
             'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3',
@@ -635,13 +679,13 @@ document.addEventListener('DOMContentLoaded', () => {
             'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1a609013c8.mp3',
             'https://cdn.pixabay.com/download/audio/2021/11/25/audio_5c6b20d881.mp3'
         ];
-
+        
         // Generate tracks with guaranteed previews
         for (let i = 0; i < count; i++) {
             const artistIndex = i % 5;
             const songIndex = i % 5;
             const previewIndex = i % guaranteedPreviews.length;
-
+            
             tracks.push({
                 id: `guaranteed-${mood}-${i}`,
                 title: mockSongs[mood][songIndex],
@@ -651,7 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 preview: guaranteedPreviews[previewIndex]
             });
         }
-
+        
         return tracks;
     }
 
@@ -661,17 +705,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Preloaded audio elements for faster playback
     const preloadedAudio = {};
-
+    
     // Function to preload audio for faster playback
     function preloadAudio(track) {
         if (!track.preview || preloadedAudio[track.id]) return;
-
+        
         try {
             const audio = new Audio();
             audio.src = track.preview;
             audio.load();
             preloadedAudio[track.id] = audio;
-
+            
             // Remove from preloaded cache after 5 minutes to save memory
             setTimeout(() => {
                 if (preloadedAudio[track.id] && preloadedAudio[track.id] !== currentAudio) {
@@ -682,15 +726,15 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('Error preloading audio:', error);
         }
     }
-
+    
     // Function to play a track
     function playTrack(track) {
         console.log('Playing track:', track.title);
-
+        
         // If there's already a track playing, stop it
         if (currentAudio) {
             currentAudio.pause();
-
+            
             // If the same track was clicked, just pause it and update UI
             if (currentlyPlayingId === track.id) {
                 updatePlayButtonUI(track.id, false);
@@ -699,15 +743,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 showNotification(`Paused: ${track.title}`);
                 return;
             }
-
+            
             // Update previous track's button
             if (currentlyPlayingId) {
                 updatePlayButtonUI(currentlyPlayingId, false);
             }
-
+            
             currentAudio = null;
         }
-
+        
         // If the track has a preview URL
         if (track.preview) {
             // Show loading indicator on the play button
@@ -716,7 +760,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const playButton = trackCard.querySelector('.play-track i');
                 playButton.className = 'fas fa-spinner fa-spin';
             }
-
+            
             // Use preloaded audio if available, otherwise create new
             if (preloadedAudio[track.id]) {
                 currentAudio = preloadedAudio[track.id];
@@ -724,9 +768,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 currentAudio = new Audio(track.preview);
             }
-
+            
             currentlyPlayingId = track.id;
-
+            
             // Set up event listeners
             const setupAudioEvents = () => {
                 // When track ends
@@ -735,12 +779,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentlyPlayingId = null;
                     updatePlayButtonUI(track.id, false);
                 });
-
+                
                 // When track is ready to play
                 currentAudio.addEventListener('canplay', () => {
                     updatePlayButtonUI(track.id, true);
                 });
-
+                
                 // When track errors
                 currentAudio.addEventListener('error', (e) => {
                     console.error('Audio error:', e);
@@ -748,24 +792,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentAudio = null;
                     currentlyPlayingId = null;
                     updatePlayButtonUI(track.id, false);
-
+                    
                     // Try fallback
                     setTimeout(() => {
                         playFallbackAudio(track);
                     }, 500);
                 });
             };
-
+            
             setupAudioEvents();
-
+            
             // Play the track
             const playPromise = currentAudio.play();
-
+            
             if (playPromise !== undefined) {
                 playPromise
                     .then(() => {
                         showNotification(`Playing: ${track.title} by ${track.artist}`);
-
+                        
                         // Preload the next track for smoother playback
                         const nextTrackIndex = currentPlaylist.tracks.findIndex(t => t.id === track.id) + 1;
                         if (nextTrackIndex < currentPlaylist.tracks.length) {
@@ -775,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .catch(error => {
                         console.error('Error playing audio:', error);
                         showNotification(`Couldn't play track: ${error.message}`, true);
-
+                        
                         // Try fallback
                         playFallbackAudio(track);
                     });
@@ -785,35 +829,35 @@ document.addEventListener('DOMContentLoaded', () => {
             playFallbackAudio(track);
         }
     }
-
+    
     // Function to play fallback audio when the main preview fails
     function playFallbackAudio(track) {
         showNotification(`Using alternative audio for "${track.title}"`, false);
-
+        
         // Get a guaranteed working audio URL
         const fallbackUrl = getGuaranteedPreview(track.id, currentPlaylist.mood);
-
+        
         if (fallbackUrl) {
             // Clean up any existing audio
             if (currentAudio) {
                 currentAudio.pause();
                 currentAudio = null;
             }
-
+            
             // Create new audio with fallback URL
             currentAudio = new Audio(fallbackUrl);
             currentlyPlayingId = track.id;
-
+            
             // Update UI
             updatePlayButtonUI(track.id, true);
-
+            
             // Set up event listeners
             currentAudio.addEventListener('ended', () => {
                 currentAudio = null;
                 currentlyPlayingId = null;
                 updatePlayButtonUI(track.id, false);
             });
-
+            
             // Play the fallback audio
             currentAudio.play()
                 .then(() => {
@@ -838,66 +882,54 @@ document.addEventListener('DOMContentLoaded', () => {
         if (trackCard) {
             const playButton = trackCard.querySelector('.play-track');
             const icon = playButton.querySelector('i');
-
+            
             if (isPlaying) {
                 icon.classList.remove('fa-play');
+                icon.classList.remove('fa-spinner');
+                icon.classList.remove('fa-spin');
                 icon.classList.add('fa-pause');
                 trackCard.classList.add('playing');
             } else {
                 icon.classList.remove('fa-pause');
+                icon.classList.remove('fa-spinner');
+                icon.classList.remove('fa-spin');
                 icon.classList.add('fa-play');
                 trackCard.classList.remove('playing');
             }
         }
     }
 
-    // Function to get mock audio URL for demo purposes
-    function getMockAudioUrl(trackId) {
-        // These are royalty-free music samples for demo purposes
-        const mockAudios = [
-            'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3', // Upbeat
-            'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8e9124485.mp3', // Relaxed
-            'https://cdn.pixabay.com/download/audio/2022/01/27/audio_d0c19a4f4d.mp3', // Sad
-            'https://cdn.pixabay.com/download/audio/2022/03/10/audio_1a609013c8.mp3', // Energetic
-            'https://cdn.pixabay.com/download/audio/2021/11/25/audio_5c6b20d881.mp3'  // Focused
-        ];
-
-        // Use the track ID to deterministically select a mock audio
-        const hash = trackId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        return mockAudios[hash % mockAudios.length];
-    }
-
     // Track queue for "Play All" functionality
     let trackQueue = [];
     let isPlayingAll = false;
-
+    
     // Function to play all tracks
     function playAllTracks() {
         if (currentPlaylist.tracks.length === 0) {
             showNotification('No tracks to play', true);
             return;
         }
-
+        
         // If already playing all, stop
         if (isPlayingAll) {
             stopPlayingAll();
             return;
         }
-
+        
         // Set up the queue
         trackQueue = [...currentPlaylist.tracks];
         isPlayingAll = true;
-
+        
         // Update Play All button
         updatePlayAllButtonUI(true);
-
+        
         // Show notification
         showNotification(`Playing your ${moodConfigs[currentPlaylist.mood].title} playlist`);
-
+        
         // Start playing the first track
         playNextInQueue();
     }
-
+    
     // Function to play next track in queue
     function playNextInQueue() {
         if (trackQueue.length === 0) {
@@ -907,22 +939,22 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification('Playlist finished');
             return;
         }
-
+        
         // Get the next track
         const nextTrack = trackQueue.shift();
-
+        
         // If there's already a track playing, stop it
         if (currentAudio) {
             currentAudio.pause();
-
+            
             // Update previous track's button
             if (currentlyPlayingId) {
                 updatePlayButtonUI(currentlyPlayingId, false);
             }
-
+            
             currentAudio = null;
         }
-
+        
         // Set up event listener for when track ends
         const onTrackEnd = () => {
             // If we're still in "play all" mode
@@ -931,14 +963,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(playNextInQueue, 1000);
             }
         };
-
+        
         // Show loading indicator on the play button
         const trackCard = document.querySelector(`[data-track-id="${nextTrack.id}"]`);
         if (trackCard) {
             const playButton = trackCard.querySelector('.play-track i');
             playButton.className = 'fas fa-spinner fa-spin';
         }
-
+        
         // Use preloaded audio if available, otherwise create new
         if (preloadedAudio[nextTrack.id]) {
             currentAudio = preloadedAudio[nextTrack.id];
@@ -950,9 +982,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const fallbackUrl = getGuaranteedPreview(nextTrack.id, currentPlaylist.mood);
             currentAudio = new Audio(fallbackUrl);
         }
-
+        
         currentlyPlayingId = nextTrack.id;
-
+        
         // Set up event listeners
         currentAudio.addEventListener('ended', () => {
             currentAudio = null;
@@ -960,23 +992,23 @@ document.addEventListener('DOMContentLoaded', () => {
             updatePlayButtonUI(nextTrack.id, false);
             onTrackEnd();
         });
-
+        
         currentAudio.addEventListener('canplay', () => {
             updatePlayButtonUI(nextTrack.id, true);
         });
-
+        
         currentAudio.addEventListener('error', (e) => {
             console.error('Audio error in queue:', e);
             currentAudio = null;
             currentlyPlayingId = null;
             updatePlayButtonUI(nextTrack.id, false);
-
+            
             // Try fallback for this track
             const fallbackUrl = getGuaranteedPreview(nextTrack.id, currentPlaylist.mood);
             if (fallbackUrl) {
                 currentAudio = new Audio(fallbackUrl);
                 currentlyPlayingId = nextTrack.id;
-
+                
                 // Set up event listeners again
                 currentAudio.addEventListener('ended', () => {
                     currentAudio = null;
@@ -984,15 +1016,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     updatePlayButtonUI(nextTrack.id, false);
                     onTrackEnd();
                 });
-
+                
                 // Update UI
                 updatePlayButtonUI(nextTrack.id, true);
-
+                
                 // Play the fallback audio
                 currentAudio.play()
                     .then(() => {
                         showNotification(`Now playing: ${nextTrack.title} by ${nextTrack.artist}`);
-
+                        
                         // Preload the next track if available
                         if (trackQueue.length > 0) {
                             preloadAudio(trackQueue[0]);
@@ -1010,15 +1042,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 onTrackEnd();
             }
         });
-
+        
         // Play the track
         const playPromise = currentAudio.play();
-
+        
         if (playPromise !== undefined) {
             playPromise
                 .then(() => {
                     showNotification(`Now playing: ${nextTrack.title} by ${nextTrack.artist}`);
-
+                    
                     // Preload the next track if available
                     if (trackQueue.length > 0) {
                         preloadAudio(trackQueue[0]);
@@ -1026,7 +1058,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
                 .catch(error => {
                     console.error('Error playing audio in queue:', error);
-
+                    
                     // Try fallback
                     const fallbackUrl = getGuaranteedPreview(nextTrack.id, currentPlaylist.mood);
                     if (fallbackUrl) {
@@ -1034,9 +1066,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             currentAudio.pause();
                             currentAudio = null;
                         }
-
+                        
                         currentAudio = new Audio(fallbackUrl);
-
+                        
                         // Set up event listeners again
                         currentAudio.addEventListener('ended', () => {
                             currentAudio = null;
@@ -1044,7 +1076,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             updatePlayButtonUI(nextTrack.id, false);
                             onTrackEnd();
                         });
-
+                        
                         // Play the fallback audio
                         currentAudio.play()
                             .then(() => {
@@ -1068,36 +1100,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
     }
-
+    
     // Function to stop playing all tracks
     function stopPlayingAll() {
         isPlayingAll = false;
         trackQueue = [];
-
+        
         // Stop current audio
         if (currentAudio) {
             currentAudio.pause();
-
+            
             // Update previous track's button
             if (currentlyPlayingId) {
                 updatePlayButtonUI(currentlyPlayingId, false);
             }
-
+            
             currentAudio = null;
             currentlyPlayingId = null;
         }
-
+        
         // Update Play All button
         updatePlayAllButtonUI(false);
-
+        
         showNotification('Playlist stopped');
     }
-
+    
     // Function to update Play All button UI
     function updatePlayAllButtonUI(isPlaying) {
         const playAllButton = document.getElementById('play-all');
         const icon = playAllButton.querySelector('i');
-
+        
         if (isPlaying) {
             icon.classList.remove('fa-play');
             icon.classList.add('fa-stop');
@@ -1116,13 +1148,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const heartIcon = event.currentTarget.querySelector('i');
         
         if (heartIcon.classList.contains('far')) {
-            // Add to favorites
             heartIcon.classList.remove('far');
             heartIcon.classList.add('fas');
-            heartIcon.style.color = '#e84393';
+            heartIcon.style.color = 'var(--secondary-color)';
             showNotification(`Added "${track.title}" to favorites`);
         } else {
-            // Remove from favorites
             heartIcon.classList.remove('fas');
             heartIcon.classList.add('far');
             heartIcon.style.color = '';
@@ -1133,52 +1163,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to share a track
     function shareTrack(track) {
         // Generate a share URL
-        const shareUrl = `${window.location.origin}${window.location.pathname}?share=track&id=${track.id}&mood=${currentPlaylist.mood}`;
+        const shareUrl = `${window.location.origin}${window.location.pathname}?track=${track.id}&mood=${currentPlaylist.mood}`;
         
-        // In a real app, this would open a share dialog
-        showNotification(`Share link for "${track.title}" copied to clipboard`);
+        // Update share link input
+        shareLink.value = shareUrl;
         
-        // Copy to clipboard
-        navigator.clipboard.writeText(shareUrl).catch(err => {
-            console.error('Could not copy text: ', err);
-        });
+        // Open share modal
+        shareModal.style.display = 'flex';
     }
 
-    // Function to save playlist
-    function savePlaylist() {
-        // In a real app, this would save the playlist to user's account
-        showNotification(`Your ${moodConfigs[currentPlaylist.mood].title} playlist has been saved!`);
+    // Function to shuffle tracks
+    function shuffleTracks() {
+        if (currentPlaylist.tracks.length === 0) {
+            showNotification('No tracks to shuffle', true);
+            return;
+        }
         
-        // Save to localStorage for demonstration
-        const savedPlaylists = JSON.parse(localStorage.getItem('moodTunesPlaylists') || '[]');
+        // Stop current playback
+        if (currentAudio) {
+            currentAudio.pause();
+            
+            if (currentlyPlayingId) {
+                updatePlayButtonUI(currentlyPlayingId, false);
+            }
+            
+            currentAudio = null;
+            currentlyPlayingId = null;
+        }
         
-        const playlistToSave = {
-            id: Date.now(),
-            mood: currentPlaylist.mood,
-            title: `${moodConfigs[currentPlaylist.mood].title} Playlist`,
-            tracks: currentPlaylist.tracks,
-            createdAt: new Date().toISOString()
-        };
+        // Shuffle the tracks
+        const shuffledTracks = [...currentPlaylist.tracks];
         
-        savedPlaylists.push(playlistToSave);
-        localStorage.setItem('moodTunesPlaylists', JSON.stringify(savedPlaylists));
+        for (let i = shuffledTracks.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledTracks[i], shuffledTracks[j]] = [shuffledTracks[j], shuffledTracks[i]];
+        }
+        
+        // Update the playlist
+        currentPlaylist.tracks = shuffledTracks;
+        
+        // Re-display the tracks
+        displayTracks(shuffledTracks);
+        
+        showNotification('Playlist shuffled');
     }
 
     // Function to open share modal
     function openShareModal() {
-        // Generate a share URL for the playlist
-        const shareUrl = `${window.location.origin}${window.location.pathname}?share=playlist&mood=${currentPlaylist.mood}`;
+        if (currentPlaylist.tracks.length === 0) {
+            showNotification('No playlist to share', true);
+            return;
+        }
         
-        // Set the share link
+        // Generate a share URL for the entire playlist
+        const shareUrl = `${window.location.origin}${window.location.pathname}?mood=${currentPlaylist.mood}`;
+        
+        // Update share link input
         shareLink.value = shareUrl;
         
-        // Display the modal
+        // Open share modal
         shareModal.style.display = 'flex';
-    }
-
-    // Function to close share modal
-    function closeShareModal() {
-        shareModal.style.display = 'none';
     }
 
     // Function to copy share link
@@ -1186,128 +1230,140 @@ document.addEventListener('DOMContentLoaded', () => {
         shareLink.select();
         document.execCommand('copy');
         
-        // Show notification
-        showNotification('Link copied to clipboard!');
+        showNotification('Link copied to clipboard');
     }
 
-    // Function to save mood to history
-    function saveMoodToHistory(mood, text) {
-        const moodHistory = JSON.parse(localStorage.getItem('moodTunesHistory') || '[]');
-        
-        const moodEntry = {
-            mood: mood,
-            text: text,
-            timestamp: new Date().toISOString()
-        };
-        
-        moodHistory.push(moodEntry);
-        
-        // Keep only the last 10 entries
-        if (moodHistory.length > 10) {
-            moodHistory.shift();
+    // Function to open QR code modal
+    function openQRModal() {
+        if (currentPlaylist.tracks.length === 0) {
+            showNotification('No playlist to generate QR code for', true);
+            return;
         }
         
-        localStorage.setItem('moodTunesHistory', JSON.stringify(moodHistory));
+        // Generate a share URL for the entire playlist
+        const shareUrl = `${window.location.origin}${window.location.pathname}?mood=${currentPlaylist.mood}`;
+        
+        // Clear previous QR code
+        qrCodeContainer.innerHTML = '';
+        
+        // Generate QR code (in a real app, this would use a QR code library)
+        const qrImg = document.createElement('img');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shareUrl)}`;
+        qrImg.alt = 'Playlist QR Code';
+        qrCodeContainer.appendChild(qrImg);
+        
+        // Open QR modal
+        qrModal.style.display = 'flex';
+    }
+
+    // Function to download QR code
+    function downloadQRCode() {
+        const qrImg = qrCodeContainer.querySelector('img');
+        
+        if (!qrImg) {
+            showNotification('No QR code to download', true);
+            return;
+        }
+        
+        // Create a temporary link to download the image
+        const link = document.createElement('a');
+        link.href = qrImg.src;
+        link.download = `moodtunes-${currentPlaylist.mood}-playlist-qr.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showNotification('QR code downloaded');
     }
 
     // Function to show notification
     function showNotification(message, isError = false) {
         // Create notification element
         const notification = document.createElement('div');
-        notification.className = `notification ${isError ? 'error' : 'success'}`;
+        notification.className = 'notification';
+        
+        if (isError) {
+            notification.classList.add('error');
+        }
+        
         notification.textContent = message;
         
         // Add to body
         document.body.appendChild(notification);
         
-        // Show notification
+        // Animate in
         setTimeout(() => {
             notification.classList.add('show');
         }, 10);
         
-        // Remove after 3 seconds
+        // Remove after delay
         setTimeout(() => {
             notification.classList.remove('show');
+            
+            // Remove from DOM after animation
             setTimeout(() => {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);
     }
 
-    // Check for shared content on page load
-    function checkForSharedContent() {
+    // Check for shared playlist in URL
+    function checkForSharedPlaylist() {
         const urlParams = new URLSearchParams(window.location.search);
-        const shareType = urlParams.get('share');
+        const sharedMood = urlParams.get('mood');
+        const sharedTrackId = urlParams.get('track');
         
-        if (shareType === 'playlist') {
-            const mood = urlParams.get('mood');
-            if (mood && moodConfigs[mood]) {
-                // Auto-generate playlist for the shared mood
-                moodInput.value = `I'm feeling ${mood}`;
-                analyzeMood();
-            }
-        } else if (shareType === 'track') {
-            const trackId = urlParams.get('id');
-            const mood = urlParams.get('mood');
+        if (sharedMood && moodConfigs[sharedMood]) {
+            // Update UI with mood
+            updateMoodUI(sharedMood);
             
-            if (trackId && mood && moodConfigs[mood]) {
-                // Show the specific track
-                moodInput.value = `I'm feeling ${mood}`;
-                analyzeMood();
+            // Generate playlist based on mood
+            generatePlaylist(sharedMood).then(() => {
+                // Show results section
+                resultsSection.style.display = 'block';
                 
-                // In a real app, we would highlight the specific track
-                setTimeout(() => {
-                    const trackElement = document.querySelector(`[data-track-id="${trackId}"]`);
-                    if (trackElement) {
-                        trackElement.scrollIntoView({ behavior: 'smooth' });
-                        trackElement.style.boxShadow = '0 0 0 3px var(--primary-color)';
+                // If a specific track was shared, play it
+                if (sharedTrackId) {
+                    const track = currentPlaylist.tracks.find(t => t.id === sharedTrackId);
+                    if (track) {
+                        setTimeout(() => {
+                            playTrack(track);
+                        }, 1000);
                     }
-                }, 2000);
-            }
+                }
+            });
         }
     }
 
-    // Add CSS for notifications
-    function addNotificationStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .notification {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background-color: var(--success-color);
-                color: white;
-                border-radius: 4px;
-                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-                z-index: 1001;
-                transform: translateY(100px);
-                opacity: 0;
-                transition: transform 0.3s, opacity 0.3s;
-            }
-            
-            .notification.show {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            
-            .notification.error {
-                background-color: var(--error-color);
-            }
-            
-            .notification.success {
-                background-color: var(--success-color);
-            }
-        `;
-        document.head.appendChild(style);
-    }
+    // Add notification styles
+    const notificationStyle = document.createElement('style');
+    notificationStyle.textContent = `
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.error {
+            background: var(--error-color);
+        }
+    `;
+    document.head.appendChild(notificationStyle);
 
-    // Initialize
-    function init() {
-        addNotificationStyles();
-        checkForSharedContent();
-    }
-
-    // Run initialization
-    init();
+    // Check for shared playlist on load
+    checkForSharedPlaylist();
 });

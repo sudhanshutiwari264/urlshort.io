@@ -1,0 +1,184 @@
+{
+  "tracks": [
+    {
+      "id": "1001",
+      "title": "Smooth Jazz",
+      "artist": "FMA Artist",
+      "album": "Jazz Collection",
+      "genre": "Jazz",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3",
+      "cover": "https://picsum.photos/seed/fma1001/300/300"
+    },
+    {
+      "id": "1002",
+      "title": "Classical Piano Sonata",
+      "artist": "FMA Artist",
+      "album": "Classical Collection",
+      "genre": "Classical",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8e9124485.mp3",
+      "cover": "https://picsum.photos/seed/fma1002/300/300"
+    },
+    {
+      "id": "1003",
+      "title": "Electronic Beats",
+      "artist": "FMA Artist",
+      "album": "Electronic Collection",
+      "genre": "Electronic",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/01/27/audio_d0c19a4f4d.mp3",
+      "cover": "https://picsum.photos/seed/fma1003/300/300"
+    },
+    {
+      "id": "1004",
+      "title": "Rock Anthem",
+      "artist": "FMA Artist",
+      "album": "Rock Collection",
+      "genre": "Rock",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/03/10/audio_1a609013c8.mp3",
+      "cover": "https://picsum.photos/seed/fma1004/300/300"
+    },
+    {
+      "id": "1005",
+      "title": "Pop Hit",
+      "artist": "FMA Artist",
+      "album": "Pop Collection",
+      "genre": "Pop",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2021/11/25/audio_5c6b20d881.mp3",
+      "cover": "https://picsum.photos/seed/fma1005/300/300"
+    },
+    {
+      "id": "1006",
+      "title": "Hip-Hop Beat",
+      "artist": "FMA Artist",
+      "album": "Hip-Hop Collection",
+      "genre": "Hip-Hop",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/03/19/audio_c8e2e367a7.mp3",
+      "cover": "https://picsum.photos/seed/fma1006/300/300"
+    },
+    {
+      "id": "1007",
+      "title": "Ambient Soundscape",
+      "artist": "FMA Artist",
+      "album": "Ambient Collection",
+      "genre": "Ambient",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/10/25/audio_946b34eaf9.mp3",
+      "cover": "https://picsum.photos/seed/fma1007/300/300"
+    },
+    {
+      "id": "1008",
+      "title": "Folk Ballad",
+      "artist": "FMA Artist",
+      "album": "Folk Collection",
+      "genre": "Folk",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",
+      "cover": "https://picsum.photos/seed/fma1008/300/300"
+    },
+    {
+      "id": "1009",
+      "title": "Indie Rock",
+      "artist": "FMA Artist",
+      "album": "Indie Collection",
+      "genre": "Indie",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/11/22/audio_de7d47feb0.mp3",
+      "cover": "https://picsum.photos/seed/fma1009/300/300"
+    },
+    {
+      "id": "1010",
+      "title": "Jazz Fusion",
+      "artist": "FMA Artist",
+      "album": "Jazz Collection",
+      "genre": "Jazz",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe58f49.mp3",
+      "cover": "https://picsum.photos/seed/fma1010/300/300"
+    },
+    {
+      "id": "1011",
+      "title": "Classical Symphony",
+      "artist": "FMA Artist",
+      "album": "Classical Collection",
+      "genre": "Classical",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/10/30/audio_f1fa483f9b.mp3",
+      "cover": "https://picsum.photos/seed/fma1011/300/300"
+    },
+    {
+      "id": "1012",
+      "title": "Electronic Dance",
+      "artist": "FMA Artist",
+      "album": "Electronic Collection",
+      "genre": "Electronic",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/09/02/audio_69db1d6e01.mp3",
+      "cover": "https://picsum.photos/seed/fma1012/300/300"
+    },
+    {
+      "id": "1013",
+      "title": "Rock Ballad",
+      "artist": "FMA Artist",
+      "album": "Rock Collection",
+      "genre": "Rock",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/01/20/audio_bae2b7b68d.mp3",
+      "cover": "https://picsum.photos/seed/fma1013/300/300"
+    },
+    {
+      "id": "1014",
+      "title": "Pop Ballad",
+      "artist": "FMA Artist",
+      "album": "Pop Collection",
+      "genre": "Pop",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2021/11/13/audio_cb4f1212a9.mp3",
+      "cover": "https://picsum.photos/seed/fma1014/300/300"
+    },
+    {
+      "id": "1015",
+      "title": "Hip-Hop Flow",
+      "artist": "FMA Artist",
+      "album": "Hip-Hop Collection",
+      "genre": "Hip-Hop",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/04/27/audio_c52cf6f4c5.mp3",
+      "cover": "https://picsum.photos/seed/fma1015/300/300"
+    },
+    {
+      "id": "1016",
+      "title": "Ambient Chill",
+      "artist": "FMA Artist",
+      "album": "Ambient Collection",
+      "genre": "Ambient",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_e92fe2aa6c.mp3",
+      "cover": "https://picsum.photos/seed/fma1016/300/300"
+    },
+    {
+      "id": "1017",
+      "title": "Folk Song",
+      "artist": "FMA Artist",
+      "album": "Folk Collection",
+      "genre": "Folk",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/01/25/audio_9cc82a4773.mp3",
+      "cover": "https://picsum.photos/seed/fma1017/300/300"
+    },
+    {
+      "id": "1018",
+      "title": "Indie Pop",
+      "artist": "FMA Artist",
+      "album": "Indie Collection",
+      "genre": "Indie",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2021/11/25/audio_00fa5593f1.mp3",
+      "cover": "https://picsum.photos/seed/fma1018/300/300"
+    },
+    {
+      "id": "1019",
+      "title": "Jazz Improv",
+      "artist": "FMA Artist",
+      "album": "Jazz Collection",
+      "genre": "Jazz",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/02/07/audio_d0c3b3e428.mp3",
+      "cover": "https://picsum.photos/seed/fma1019/300/300"
+    },
+    {
+      "id": "1020",
+      "title": "Classical Concerto",
+      "artist": "FMA Artist",
+      "album": "Classical Collection",
+      "genre": "Classical",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/02/11/audio_8fad8a8e1e.mp3",
+      "cover": "https://picsum.photos/seed/fma1020/300/300"
+    }
+  ]
+}

@@ -3,18 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MoodTunes | Your AI Mood-Based Music Generator</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>MoodTunes - AI-Powered Music Recommendations</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <meta name="description" content="MoodTunes analyzes your mood from text and creates the perfect playlist just for you. Powered by AI and music APIs.">
-    <meta property="og:title" content="MoodTunes | AI Mood-Based Music Generator">
-    <meta property="og:description" content="Get a personalized playlist based on your current mood. Just type how you're feeling!">
-    <meta property="og:image" content="https://moodtunes.vercel.app/og-image.jpg">
-    <meta property="og:url" content="https://moodtunes.vercel.app">
-    <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
     <div class="app-container">
@@ -30,7 +22,7 @@
             <section class="input-section">
                 <div class="mood-input-container">
                     <h2>How are you feeling today?</h2>
-                    <textarea id="mood-input" placeholder="Describe your mood, thoughts, or what's happening in your life right now... (e.g., 'I just aced my exam and feel on top of the world!' or 'Feeling a bit down today, need something to lift my spirits')"></textarea>
+                    <textarea id="mood-input" placeholder="Describe your mood or what's on your mind... (e.g., 'I'm feeling really energetic and excited today!')"></textarea>
                     <button id="analyze-btn" class="primary-btn">
                         <i class="fas fa-brain"></i> Analyze My Mood
                     </button>
@@ -43,8 +35,8 @@
                     <div class="mood-card">
                         <div class="mood-emoji" id="mood-emoji">😊</div>
                         <div class="mood-details">
-                            <h3 id="mood-title">Happy & Energetic</h3>
-                            <p id="mood-description">You're feeling positive and full of energy! Here's a playlist to match your upbeat mood.</p>
+                            <h3 id="mood-title">Happy</h3>
+                            <p id="mood-description">You're feeling positive and upbeat. Here's a playlist to match your happy mood!</p>
                         </div>
                     </div>
                 </div>
@@ -55,57 +47,60 @@
                         <button id="play-all" class="control-btn">
                             <i class="fas fa-play"></i> Play All
                         </button>
-                        <button id="save-playlist" class="control-btn">
-                            <i class="fas fa-save"></i> Save Playlist
+                        <button id="shuffle" class="control-btn">
+                            <i class="fas fa-random"></i> Shuffle
                         </button>
                         <button id="share-playlist" class="control-btn">
-                            <i class="fas fa-share-alt"></i> Share
+                            <i class="fas fa-share-alt"></i> Share Playlist
+                        </button>
+                        <button id="generate-qr" class="control-btn">
+                            <i class="fas fa-qrcode"></i> Generate QR Code
                         </button>
                     </div>
-                    <div id="tracks-container" class="tracks-container">
+                    <div class="tracks-container" id="tracks-container">
                         <!-- Tracks will be added here dynamically -->
                     </div>
                 </div>
             </section>
 
             <section class="features-section">
-                <h2>Why MoodTunes?</h2>
+                <h2>Features</h2>
                 <div class="features-grid">
                     <div class="feature-card">
                         <i class="fas fa-brain"></i>
-                        <h3>AI-Powered Analysis</h3>
-                        <p>Our advanced AI analyzes your text to understand your emotional state and energy level.</p>
+                        <h3>Mood Analysis</h3>
+                        <p>Our AI analyzes your text to understand your emotional state.</p>
                     </div>
                     <div class="feature-card">
-                        <i class="fas fa-headphones-alt"></i>
+                        <i class="fas fa-music"></i>
                         <h3>Personalized Playlists</h3>
-                        <p>Get music recommendations tailored specifically to your current mood and feelings.</p>
+                        <p>Get music recommendations tailored to your current mood.</p>
                     </div>
                     <div class="feature-card">
-                        <i class="fas fa-globe"></i>
-                        <h3>Diverse Music Library</h3>
-                        <p>Access millions of songs across genres, languages, and cultures to match any mood.</p>
+                        <i class="fas fa-qrcode"></i>
+                        <h3>QR Code Generation</h3>
+                        <p>Generate QR codes for your playlists to share with friends.</p>
                     </div>
                     <div class="feature-card">
-                        <i class="fas fa-history"></i>
-                        <h3>Mood History</h3>
-                        <p>Track how your mood changes over time and rediscover playlists from your past moods.</p>
+                        <i class="fas fa-share-alt"></i>
+                        <h3>Easy Sharing</h3>
+                        <p>Share your mood-based playlists on social media.</p>
                     </div>
                 </div>
             </section>
 
-            <section class="how-it-works">
+            <section class="how-it-works-section">
                 <h2>How It Works</h2>
                 <div class="steps-container">
                     <div class="step">
                         <div class="step-number">1</div>
                         <h3>Share Your Feelings</h3>
-                        <p>Type how you're feeling or what's on your mind in the text box.</p>
+                        <p>Type how you're feeling or what's on your mind.</p>
                     </div>
                     <div class="step">
                         <div class="step-number">2</div>
                         <h3>AI Analysis</h3>
-                        <p>Our AI analyzes your text to determine your emotional state and energy level.</p>
+                        <p>Our algorithm analyzes your text to determine your emotional state.</p>
                     </div>
                     <div class="step">
                         <div class="step-number">3</div>
@@ -135,37 +130,56 @@
                 </div>
                 <div class="social-links">
                     <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
                     <a href="#" class="social-link"><i class="fab fa-github"></i></a>
                 </div>
             </div>
             <div class="copyright">
-                <p>© 2024 MoodTunes. Created by Sudhanshu Tiwari. All rights reserved.</p>
+                &copy; 2023 MoodTunes. All rights reserved.
             </div>
         </footer>
     </div>
 
-    <!-- Modal for sharing -->
-    <div id="share-modal" class="modal">
+    <!-- Share Modal -->
+    <div class="modal" id="share-modal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Share Your Mood Playlist</h2>
+            <span class="close-modal" id="close-share-modal">&times;</span>
+            <h3>Share Your Playlist</h3>
             <p>Share this unique playlist with your friends!</p>
             <div class="share-link-container">
                 <input type="text" id="share-link" readonly>
                 <button id="copy-link-btn"><i class="fas fa-copy"></i></button>
             </div>
             <div class="share-buttons">
-                <button class="share-btn twitter"><i class="fab fa-twitter"></i> Twitter</button>
-                <button class="share-btn facebook"><i class="fab fa-facebook"></i> Facebook</button>
-                <button class="share-btn whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                <button class="share-btn twitter">
+                    <i class="fab fa-twitter"></i> Twitter
+                </button>
+                <button class="share-btn facebook">
+                    <i class="fab fa-facebook"></i> Facebook
+                </button>
+                <button class="share-btn whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Loading overlay -->
-    <div id="loading-overlay" class="loading-overlay">
+    <!-- QR Code Modal -->
+    <div class="modal" id="qr-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-qr-modal">&times;</span>
+            <h3>Playlist QR Code</h3>
+            <p>Scan this QR code to access your playlist:</p>
+            <div id="qr-code-container"></div>
+            <button id="download-qr" class="primary-btn">
+                <i class="fas fa-download"></i> Download QR Code
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
         <div class="loading-content">
             <div class="loading-spinner"></div>
             <p id="loading-text">Analyzing your mood...</p>
