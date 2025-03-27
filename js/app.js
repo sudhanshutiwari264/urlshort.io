@@ -24,7 +24,52 @@ document.addEventListener('DOMContentLoaded', () => {
     domainPrefixElement.textContent = baseUrlWithoutFilename;
 
     // URL data storage
-    let urlDatabase = JSON.parse(localStorage.getItem('sudhanshulinkUrls')) || {};
+    let urlDatabase = {};
+
+    // Check if localStorage is available
+    function isLocalStorageAvailable() {
+        try {
+            const test = 'test';
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // Load data from localStorage
+    function loadUrlDatabase() {
+        if (isLocalStorageAvailable()) {
+            try {
+                const data = localStorage.getItem('sudhanshulinkUrls');
+                if (data) {
+                    urlDatabase = JSON.parse(data);
+                    console.log('URL database loaded from localStorage');
+                }
+            } catch (e) {
+                console.error('Error loading URL database:', e);
+                urlDatabase = {};
+            }
+        } else {
+            showNotification('LocalStorage is not available. Your links will not be saved.', true);
+        }
+    }
+
+    // Save data to localStorage
+    function saveUrlDatabase() {
+        if (isLocalStorageAvailable()) {
+            try {
+                localStorage.setItem('sudhanshulinkUrls', JSON.stringify(urlDatabase));
+            } catch (e) {
+                console.error('Error saving URL database:', e);
+                showNotification('Failed to save your links. LocalStorage might be full.', true);
+            }
+        }
+    }
+
+    // Initialize database
+    loadUrlDatabase();
     
     // Generate a random short code
     function generateRandomCode(length = 6) {
@@ -109,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         
         // Save to localStorage
-        localStorage.setItem('sudhanshulinkUrls', JSON.stringify(urlDatabase));
+        saveUrlDatabase();
         
         // Generate the short URL
         const shortUrl = `${baseUrlWithoutFilename}?s=${customPath}`;
@@ -279,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteButton.addEventListener('click', () => {
                 if (confirm('Are you sure you want to delete this link?')) {
                     delete urlDatabase[path];
-                    localStorage.setItem('sudhanshulinkUrls', JSON.stringify(urlDatabase));
+                    saveUrlDatabase();
                     updateRecentLinks();
                     showNotification('Link deleted successfully');
                 }
@@ -305,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (shortCode && urlDatabase[shortCode]) {
             // Increment click count
             urlDatabase[shortCode].clicks++;
-            localStorage.setItem('sudhanshulinkUrls', JSON.stringify(urlDatabase));
+            saveUrlDatabase();
 
             // Redirect to the long URL
             window.location.href = urlDatabase[shortCode].longUrl;

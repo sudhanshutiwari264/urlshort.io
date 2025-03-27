@@ -7,9 +7,20 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/png" href="images/favicon.png">
-    <meta name="description" content="A personal URL shortener by Sudhanshu Tiwari">
+    <meta name="description" content="A personal URL shortener by Sudhanshu Tiwari - Hosted on GitHub Pages">
     <meta property="og:title" content="SudhanshuLinks">
-    <meta property="og:description" content="A personal URL shortener by Sudhanshu Tiwari">
+    <meta property="og:description" content="A personal URL shortener by Sudhanshu Tiwari - Hosted on GitHub Pages">
+    <!-- Ensure proper path resolution for GitHub Pages -->
+    <script>
+        // Check if we need to fix the base URL for assets
+        if (window.location.pathname.indexOf('/') > 0 && !window.location.pathname.endsWith('/')) {
+            const baseElement = document.createElement('base');
+            const baseUrl = window.location.href.split('?')[0].split('#')[0];
+            const baseUrlWithoutFilename = baseUrl.substring(0, baseUrl.lastIndexOf('/') + 1);
+            baseElement.href = baseUrlWithoutFilename;
+            document.head.appendChild(baseElement);
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -64,8 +75,22 @@
         <section class="about-section">
             <h2>About SudhanshuLinks</h2>
             <p>A personal URL shortener created by Sudhanshu Tiwari. Make your links more manageable and trackable with custom short URLs.</p>
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>100% Client-Side Storage</span>
+                </div>
+                <div class="feature">
+                    <i class="fab fa-github"></i>
+                    <span>Hosted on GitHub Pages</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-lock"></i>
+                    <span>Your Data Stays on Your Device</span>
+                </div>
+            </div>
             <p>© 2025 Sudhanshu Tiwari. All rights reserved.</p>
-            
+
             <div class="social-links">
                 <a href="https://x.com/sudhanshusX" target="_blank" title="Twitter/X">
                     <i class="fab fa-x-twitter"></i>

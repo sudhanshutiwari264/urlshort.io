@@ -90,9 +90,44 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Functions for localStorage handling
+            function isLocalStorageAvailable() {
+                try {
+                    const test = 'test';
+                    localStorage.setItem(test, test);
+                    localStorage.removeItem(test);
+                    return true;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function getUrlDatabase() {
+                if (isLocalStorageAvailable()) {
+                    try {
+                        const data = localStorage.getItem('sudhanshulinkUrls');
+                        return data ? JSON.parse(data) : {};
+                    } catch (e) {
+                        console.error('Error loading URL database:', e);
+                        return {};
+                    }
+                }
+                return {};
+            }
+
+            function saveUrlDatabase(database) {
+                if (isLocalStorageAvailable()) {
+                    try {
+                        localStorage.setItem('sudhanshulinkUrls', JSON.stringify(database));
+                    } catch (e) {
+                        console.error('Error saving URL database:', e);
+                    }
+                }
+            }
+
             // Get URL database from localStorage
-            const urlDatabase = JSON.parse(localStorage.getItem('sudhanshulinkUrls')) || {};
-            
+            const urlDatabase = getUrlDatabase();
+
             // Get the shortcode from the query parameter 's'
             const urlParams = new URLSearchParams(window.location.search);
             const shortCode = urlParams.get('s');
@@ -100,7 +135,7 @@
             if (shortCode && urlDatabase[shortCode]) {
                 // Increment click count
                 urlDatabase[shortCode].clicks++;
-                localStorage.setItem('sudhanshulinkUrls', JSON.stringify(urlDatabase));
+                saveUrlDatabase(urlDatabase);
 
                 // Redirect to the long URL after a short delay
                 setTimeout(() => {

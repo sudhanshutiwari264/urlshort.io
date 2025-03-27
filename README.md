@@ -1,6 +1,6 @@
-# SudhanshuLinks - Personal URL Shortener
+# SudhanshuLinks - Personal URL Shortener for GitHub Pages
 
-A personalized URL shortener created by Sudhanshu Tiwari. This tool allows you to create custom short links that are easy to share and remember.
+A personalized URL shortener created by Sudhanshu Tiwari, designed specifically to work with GitHub Pages. This tool allows you to create custom short links that are easy to share and remember, with all data stored securely in your browser.
 
 ![SudhanshuLinks](https://via.placeholder.com/800x400?text=SudhanshuLinks)
 
@@ -11,8 +11,11 @@ A personalized URL shortener created by Sudhanshu Tiwari. This tool allows you t
 - Track the number of clicks on your links
 - Copy links to clipboard with one click
 - Responsive design that works on all devices
-- No server required - works entirely in the browser
+- 100% client-side - all data stored in your browser
+- No server required - works perfectly on GitHub Pages
+- Privacy-focused - your data never leaves your device
 - Personalized with your branding
+- Simple, clean, and sober design
 
 ## How It Works
 
