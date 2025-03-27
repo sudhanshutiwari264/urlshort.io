@@ -216,6 +216,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const randomGenre = genres[Math.floor(Math.random() * genres.length)];
 
         try {
+            // Try to fetch from Deezer
+            try {
+                const deezerTracks = await fetchFromDeezer(randomGenre);
+                if (deezerTracks && deezerTracks.length > 0) {
+                    return deezerTracks;
+                }
+            } catch (deezerError) {
+                console.warn('Deezer API error, trying next source:', deezerError);
+            }
+
             // Try to fetch from YouTube
             try {
                 const youtubeTracks = await fetchFromYouTube(randomGenre);
@@ -271,6 +281,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('API Error:', error);
+            throw error;
+        }
+    }
+
+    // Function to fetch tracks from Deezer
+    async function fetchFromDeezer(genre) {
+        try {
+            // Map our genre to Deezer search terms
+            const moodToDeezerMap = {
+                'happy': 'happy',
+                'excited': 'energetic',
+                'relaxed': 'relaxing',
+                'sad': 'sad',
+                'angry': 'powerful',
+                'tired': 'ambient',
+                'focused': 'concentration',
+                'romantic': 'romantic'
+            };
+
+            // Use the current mood for better results
+            const searchTerm = moodToDeezerMap[currentPlaylist.mood] || genre;
+
+            // In a real app, you would use the Deezer API with proper authentication
+            // For this demo, we'll use a static JSON file with Deezer data
+            const response = await fetch('/public-music-data/deezer-sample.json');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch from Deezer');
+            }
+
+            const data = await response.json();
+
+            // Get all tracks and shuffle them
+            let tracks = [...data.data];
+
+            // Shuffle array
+            for (let i = tracks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+            }
+
+            // Limit to 8 tracks and format the response
+            return tracks.slice(0, 8).map(track => ({
+                id: `deezer-${track.id}`,
+                title: track.title,
+                artist: track.artist.name,
+                album: track.album.title,
+                cover: track.album.cover_medium || `https://picsum.photos/seed/deezer${track.id}/300/300`,
+                preview: track.preview,
+                sourceType: 'deezer',
+                deezerLink: track.link
+            }));
+
+        } catch (error) {
+            console.error('Deezer API error:', error);
             throw error;
         }
     }
@@ -665,9 +730,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Filter tracks to only include those with working preview URLs or YouTube embeds
         const verifiedTracks = [];
 
-        // Add YouTube tracks directly (they don't need verification)
+        // Add YouTube and Deezer tracks directly (they don't need verification)
         const youtubeTracks = tracks.filter(track => track.sourceType === 'youtube');
-        verifiedTracks.push(...youtubeTracks);
+        const deezerTracks = tracks.filter(track => track.sourceType === 'deezer');
+        verifiedTracks.push(...youtubeTracks, ...deezerTracks);
 
         // Process tracks with preview URLs
         const tracksWithPreviews = tracks.filter(track => track.preview && !track.sourceType);
@@ -726,7 +792,7 @@ document.addEventListener('DOMContentLoaded', function() {
             trackCard.className = 'track-card';
             trackCard.dataset.trackId = track.id;
 
-     // Different layout for YouTube tracks
+     // Different layout based on source type
             if (track.sourceType === 'youtube') {
                 trackCard.innerHTML = `
                     <div class="track-youtube-container">
@@ -735,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="fab fa-youtube"></i>
                         </div>
                     </div>
-                           <div class="track-info">
+                    <div class="track-info">
                         <div class="track-title">${track.title}</div>
                         <div class="track-artist">${track.artist}</div>
                         <div class="track-controls">
@@ -747,6 +813,31 @@ document.addEventListener('DOMContentLoaded', function() {
                             </button>
                             <button class="track-btn share-track" title="Share">
                                 <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else if (track.sourceType === 'deezer') {
+                trackCard.innerHTML = `
+                    <div class="track-deezer-container">
+                        <img src="${track.cover}" alt="${track.title}" class="track-image deezer-thumbnail">
+                        <div class="deezer-play-overlay">
+                            <i class="fas fa-music"></i>
+                        </div>
+                    </div>
+                    <div class="track-info">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-artist">${track.artist}</div>
+                        <div class="track-album">${track.album}</div>
+                        <div class="track-controls">
+                            <button class="track-btn play-track" title="Play preview">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="track-btn open-deezer" title="Open in Deezer">
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                            <button class="track-btn add-to-favorites" title="Add to favorites">
+                                <i class="far fa-heart"></i>
                             </button>
                         </div>
                     </div>
@@ -777,11 +868,31 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add event listeners to track buttons
             const playBtn = trackCard.querySelector('.play-track');
             const favoriteBtn = trackCard.querySelector('.add-to-favorites');
-            const shareBtn = trackCard.querySelector('.share-track');
 
             playBtn.addEventListener('click', () => playTrack(track));
             favoriteBtn.addEventListener('click', (e) => toggleFavorite(e, track));
-            shareBtn.addEventListener('click', () => shareTrack(track));
+
+            // Add share button listener if it exists
+            const shareBtn = trackCard.querySelector('.share-track');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', () => shareTrack(track));
+            }
+
+            // Add Deezer-specific listeners
+            if (track.sourceType === 'deezer') {
+                const openDeezerBtn = trackCard.querySelector('.open-deezer');
+                if (openDeezerBtn) {
+                    openDeezerBtn.addEventListener('click', () => {
+                        window.open(track.deezerLink, '_blank');
+                    });
+                }
+
+                const thumbnail = trackCard.querySelector('.deezer-thumbnail');
+                const overlay = trackCard.querySelector('.deezer-play-overlay');
+
+                thumbnail.addEventListener('click', () => playTrack(track));
+                overlay.addEventListener('click', () => playTrack(track));
+            }
 
             // For YouTube tracks, also make the thumbnail clickable
             if (track.sourceType === 'youtube') {
@@ -921,6 +1032,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Handle Deezer tracks
+        if (track.sourceType === 'deezer') {
+            playDeezerTrack(track);
+            return;
+        }
+
         // If there's already a track playing, stop it
         if (currentAudio) {
             currentAudio.pause();
@@ -1050,6 +1167,161 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Set as currently playing
         currentlyPlayingId = track.id;
+    }
+
+    // Deezer player modal
+    const deezerModal = document.createElement('div');
+    deezerModal.className = 'modal deezer-modal';
+    deezerModal.innerHTML = `
+        <div class="modal-content deezer-modal-content">
+            <span class="close-modal" id="close-deezer-modal">&times;</span>
+            <div id="deezer-player-container"></div>
+        </div>
+    `;
+    document.body.appendChild(deezerModal);
+
+    // Close Deezer modal event
+    document.getElementById('close-deezer-modal').addEventListener('click', () => {
+        deezerModal.style.display = 'none';
+        document.getElementById('deezer-player-container').innerHTML = '';
+
+        // If there's audio playing, stop it
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+
+            // Update UI
+            if (currentlyPlayingId) {
+                updatePlayButtonUI(currentlyPlayingId, false);
+                currentlyPlayingId = null;
+            }
+        }
+    });
+
+    // Function to play a Deezer track
+    function playDeezerTrack(track) {
+        // If there's already a track playing, stop it
+        if (currentAudio) {
+            currentAudio.pause();
+
+            // If the same track was clicked, just pause it and update UI
+            if (currentlyPlayingId === track.id) {
+                updatePlayButtonUI(track.id, false);
+                currentlyPlayingId = null;
+                currentAudio = null;
+                showNotification(`Paused: ${track.title}`);
+                return;
+            }
+
+            // Update previous track's button
+            if (currentlyPlayingId) {
+                updatePlayButtonUI(currentlyPlayingId, false);
+            }
+
+            currentAudio = null;
+        }
+
+        // Show loading indicator on the play button
+        const trackCard = document.querySelector(`[data-track-id="${track.id}"]`);
+        if (trackCard) {
+            const playButton = trackCard.querySelector('.play-track i');
+            playButton.className = 'fas fa-spinner fa-spin';
+        }
+
+        // Create new audio with the preview URL
+        currentAudio = new Audio(track.preview);
+        currentlyPlayingId = track.id;
+
+        // Set up event listeners
+        currentAudio.addEventListener('ended', () => {
+            currentAudio = null;
+            currentlyPlayingId = null;
+            updatePlayButtonUI(track.id, false);
+        });
+
+        currentAudio.addEventListener('canplay', () => {
+            updatePlayButtonUI(track.id, true);
+        });
+
+        currentAudio.addEventListener('error', (e) => {
+            console.error('Deezer audio error:', e);
+            showNotification(`Couldn't play Deezer track: Audio error`, true);
+            currentAudio = null;
+            currentlyPlayingId = null;
+            updatePlayButtonUI(track.id, false);
+        });
+
+        // Play the track
+        const playPromise = currentAudio.play();
+
+        if (playPromise !== undefined) {
+            playPromise
+                .then(() => {
+                    showNotification(`Playing Deezer: ${track.title} by ${track.artist}`);
+
+                    // Create the Deezer widget if needed
+                    if (track.deezerLink) {
+                        // Extract the track ID from the Deezer link
+                        const deezerTrackId = track.id.replace('deezer-', '');
+
+                        // Create the iframe for the Deezer player
+                        const playerContainer = document.getElementById('deezer-player-container');
+                        playerContainer.innerHTML = `
+                            <div class="deezer-player-info">
+                                <img src="${track.cover}" alt="${track.title}" class="deezer-player-cover">
+                                <div class="deezer-player-details">
+                                    <h3>${track.title}</h3>
+                                    <p>${track.artist}</p>
+                                    <p>${track.album}</p>
+                                    <a href="${track.deezerLink}" target="_blank" class="deezer-link-btn">
+                                        Open in Deezer
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="deezer-player-controls">
+                                <div class="deezer-player-progress">
+                                    <div class="deezer-player-progress-bar"></div>
+                                </div>
+                                <div class="deezer-player-buttons">
+                                    <button id="deezer-player-pause" class="deezer-player-btn">
+                                        <i class="fas fa-pause"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+
+                        // Show the Deezer modal
+                        deezerModal.style.display = 'flex';
+
+                        // Add event listener to the pause button
+                        const pauseBtn = document.getElementById('deezer-player-pause');
+                        pauseBtn.addEventListener('click', () => {
+                            if (currentAudio) {
+                                currentAudio.pause();
+                                currentAudio = null;
+                                currentlyPlayingId = null;
+                                updatePlayButtonUI(track.id, false);
+                                deezerModal.style.display = 'none';
+                            }
+                        });
+
+                        // Update progress bar
+                        const progressBar = document.querySelector('.deezer-player-progress-bar');
+                        currentAudio.addEventListener('timeupdate', () => {
+                            const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
+                            progressBar.style.width = `${progress}%`;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error playing Deezer audio:', error);
+                    showNotification(`Couldn't play Deezer track: ${error.message}`, true);
+
+                    currentAudio = null;
+                    currentlyPlayingId = null;
+                    updatePlayButtonUI(track.id, false);
+                });
+        }
     }
     
     // Function to play fallback audio when the main preview fails

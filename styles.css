@@ -639,6 +639,135 @@ footer {
     opacity: 1;
 }
 
+/* Deezer Track Styles */
+.track-deezer-container {
+    position: relative;
+}
+
+.deezer-play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.deezer-play-overlay i {
+    font-size: 3rem;
+    color: #00c7f2; /* Deezer blue color */
+}
+
+.track-deezer-container:hover .deezer-play-overlay {
+    opacity: 1;
+}
+
+.track-album {
+    color: var(--light-text-color);
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Deezer Player Styles */
+.deezer-modal-content {
+    max-width: 600px;
+    padding: 30px;
+}
+
+.deezer-player-info {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.deezer-player-cover {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 20px;
+}
+
+.deezer-player-details {
+    flex: 1;
+}
+
+.deezer-player-details h3 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.deezer-player-details p {
+    margin-bottom: 5px;
+    color: var(--light-text-color);
+}
+
+.deezer-link-btn {
+    display: inline-block;
+    background-color: #00c7f2; /* Deezer blue color */
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.deezer-link-btn:hover {
+    background-color: #00a8cc;
+}
+
+.deezer-player-controls {
+    margin-top: 20px;
+}
+
+.deezer-player-progress {
+    height: 5px;
+    background-color: var(--border-color);
+    border-radius: 5px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.deezer-player-progress-bar {
+    height: 100%;
+    background-color: #00c7f2; /* Deezer blue color */
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+.deezer-player-buttons {
+    display: flex;
+    justify-content: center;
+}
+
+.deezer-player-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deezer-player-btn:hover {
+    background-color: #5a4ecc;
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
     .mood-card {
