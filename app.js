@@ -2,25 +2,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const moodInput = document.getElementById('mood-input');
     const analyzeBtn = document.getElementById('analyze-btn');
-    const resultsSection = document.getElementById('results-section');
+    const resultsSection = document.querySelector('.results-section');
     const moodEmoji = document.getElementById('mood-emoji');
     const moodTitle = document.getElementById('mood-title');
     const moodDescription = document.getElementById('mood-description');
-    const tracksContainer = document.getElementById('tracks-container');
-    const playAllBtn = document.getElementById('play-all');
-    const shuffleBtn = document.getElementById('shuffle');
-    const sharePlaylistBtn = document.getElementById('share-playlist');
-    const generateQRBtn = document.getElementById('generate-qr');
-    const loadingOverlay = document.getElementById('loading-overlay');
+    const tracksContainer = document.querySelector('.tracks-container');
+    const playAllBtn = document.getElementById('play-all-btn');
+    const shuffleBtn = document.getElementById('shuffle-btn');
+    const sharePlaylistBtn = document.getElementById('share-playlist-btn');
+    const savePlaylistBtn = document.getElementById('save-playlist-btn');
+
+    // Create loading overlay dynamically
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.id = 'loading-overlay';
+    loadingOverlay.className = 'loading-overlay';
+    loadingOverlay.innerHTML = '<div class="loading-spinner"></div><div id="loading-text" class="loading-text">Loading...</div>';
+    document.body.appendChild(loadingOverlay);
     const loadingText = document.getElementById('loading-text');
-    const shareModal = document.getElementById('share-modal');
-    const closeShareModal = document.getElementById('close-share-modal');
-    const shareLink = document.getElementById('share-link');
-    const copyLinkBtn = document.getElementById('copy-link-btn');
-    const qrModal = document.getElementById('qr-modal');
-    const closeQRModal = document.getElementById('close-qr-modal');
-    const qrCodeContainer = document.getElementById('qr-code-container');
-    const downloadQRBtn = document.getElementById('download-qr');
 
     // Current playlist data
     const currentPlaylist = {
@@ -82,48 +80,84 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event Listeners
     analyzeBtn.addEventListener('click', analyzeMood);
-    playAllBtn.addEventListener('click', playAllTracks);
-    shuffleBtn.addEventListener('click', shuffleTracks);
-    sharePlaylistBtn.addEventListener('click', openShareModal);
-    generateQRBtn.addEventListener('click', openQRModal);
-    closeShareModal.addEventListener('click', () => shareModal.style.display = 'none');
-    closeQRModal.addEventListener('click', () => qrModal.style.display = 'none');
-    copyLinkBtn.addEventListener('click', copyShareLink);
-    downloadQRBtn.addEventListener('click', downloadQRCode);
+
+    // Add event listeners for buttons that exist in the HTML
+    if (playAllBtn) playAllBtn.addEventListener('click', playAllTracks);
+    if (shuffleBtn) shuffleBtn.addEventListener('click', shuffleTracks);
+    if (sharePlaylistBtn) sharePlaylistBtn.addEventListener('click', sharePlaylist);
+    if (savePlaylistBtn) savePlaylistBtn.addEventListener('click', savePlaylist);
+
+    // Create notification container
+    const notificationContainer = document.createElement('div');
+    notificationContainer.className = 'notification';
+    document.body.appendChild(notificationContainer);
+
+    // Function to show notification
+    function showNotification(message, isError = false) {
+        notificationContainer.textContent = message;
+        notificationContainer.className = isError ? 'notification error show' : 'notification show';
+
+        setTimeout(() => {
+            notificationContainer.className = 'notification';
+        }, 3000);
+    }
 
     // Function to analyze mood from input text
     function analyzeMood() {
         const text = moodInput.value.trim();
-        
+
         if (!text) {
             showNotification('Please enter how you\'re feeling first!', true);
             return;
         }
-        
+
         // Show loading overlay
         loadingOverlay.style.display = 'flex';
         loadingText.textContent = 'Analyzing your mood...';
-        
+
         // Simulate API call delay
         setTimeout(() => {
             // Determine mood based on text
             const mood = determineMood(text);
-            
+
             // Update UI with mood
             updateMoodUI(mood);
-            
+
             // Generate playlist based on mood
             generatePlaylist(mood).then(() => {
                 // Hide loading overlay
                 loadingOverlay.style.display = 'none';
-                
+
                 // Show results section
                 resultsSection.style.display = 'block';
-                
+
                 // Scroll to results
                 resultsSection.scrollIntoView({ behavior: 'smooth' });
             });
         }, 1500);
+    }
+
+    // Function to share playlist
+    function sharePlaylist() {
+        // Create a shareable link with the current mood
+        const shareableLink = `${window.location.origin}${window.location.pathname}?mood=${currentPlaylist.mood}`;
+
+        // Copy to clipboard
+        navigator.clipboard.writeText(shareableLink)
+            .then(() => {
+                showNotification('Playlist link copied to clipboard!');
+            })
+            .catch(err => {
+                console.error('Could not copy text: ', err);
+                showNotification('Failed to copy link', true);
+            });
+    }
+
+    // Function to save playlist
+    function savePlaylist() {
+        // In a real app, this would save to a database
+        // For now, we'll just show a notification
+        showNotification('Playlist saved to your library!');
     }
 
     // Function to determine mood from text
@@ -711,6 +745,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to display tracks in the UI
     async function displayTracks(tracks) {
+        // Get the tracks container
+        const tracksContainer = document.querySelector('.tracks-container');
+
+        // Clear the tracks container
         tracksContainer.innerHTML = '';
 
         // Show loading message while we verify tracks
