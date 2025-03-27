@@ -1,163 +1,194 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting... | SudhanshuLinks</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/png" href="images/favicon.png">
-    <!-- Fix relative paths for GitHub Pages -->
-    <script>
-        // Check if we need to fix the base URL for assets
-        if (window.location.pathname.indexOf('/') > 0) {
-            const baseElement = document.createElement('base');
-            const baseUrl = window.location.href.split('?')[0].split('#')[0];
-            const baseUrlWithoutFilename = baseUrl.substring(0, baseUrl.lastIndexOf('/') + 1);
-            baseElement.href = baseUrlWithoutFilename;
-            document.head.appendChild(baseElement);
-        }
-    </script>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             text-align: center;
-            background-color: #f9f9f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
-        
-        .redirect-container {
-            max-width: 500px;
-            padding: 2rem;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
         h1 {
-            color: #6c5ce7;
-            margin-bottom: 1rem;
+            color: #3498db;
         }
-        
         .loader {
             display: inline-block;
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(108, 92, 231, 0.3);
+            border: 3px solid rgba(52, 152, 219, 0.3);
             border-radius: 50%;
-            border-top-color: #6c5ce7;
+            border-top-color: #3498db;
             animation: spin 1s ease-in-out infinite;
-            margin: 1rem 0;
+            margin: 20px auto;
         }
-        
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
-        .message {
-            margin-bottom: 1rem;
-            color: #636e72;
+        #error-message {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
         }
-        
-        .home-link {
-            display: inline-block;
-            margin-top: 1rem;
-            color: #6c5ce7;
+        a {
+            color: #3498db;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
         }
-        
-        .home-link:hover {
-            color: #fd79a8;
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="redirect-container">
-        <h1>SudhanshuLinks</h1>
-        <div id="redirect-message">
-            <div class="loader"></div>
-            <p class="message">Redirecting you to your destination...</p>
-        </div>
-        <div id="not-found-message" style="display: none;">
-            <p class="message">Oops! This short link doesn't exist or has been removed.</p>
-            <a href="/" class="home-link">Go to Homepage</a>
-        </div>
+    <h1>SudhanshuLinks</h1>
+    <p id="redirect-message">Redirecting you to your destination...</p>
+    <div class="loader" id="loader"></div>
+    <div id="error-message">
+        <p id="error-text">Oops! This short link doesn't exist or has been removed.</p>
+        <p><a href="/">Go to Homepage</a></p>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Functions for localStorage handling
-            function isLocalStorageAvailable() {
-                try {
-                    const test = 'test';
-                    localStorage.setItem(test, test);
-                    localStorage.removeItem(test);
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            }
-
-            function getUrlDatabase() {
-                if (isLocalStorageAvailable()) {
-                    try {
-                        const data = localStorage.getItem('sudhanshulinkUrls');
-                        return data ? JSON.parse(data) : {};
-                    } catch (e) {
-                        console.error('Error loading URL database:', e);
-                        return {};
+        // Function to show error message
+        function showError(message) {
+            console.error("Error:", message);
+            document.getElementById("redirect-message").style.display = "none";
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("error-message").style.display = "block";
+            document.getElementById("error-text").textContent = 
+                message || "Oops! This short link doesn't exist or has been removed.";
+        }
+        
+        // Function to extract the short code from the URL
+        function getShortCode() {
+            try {
+                // Get the path from the URL
+                const path = window.location.pathname;
+                
+                // For GitHub Pages project sites (username.github.io/repo-name)
+                if (window.location.hostname.includes('github.io')) {
+                    // Extract path segments and filter out empty ones
+                    const pathParts = path.split('/').filter(part => part !== '');
+                    
+                    // If we have at least 2 segments (repo name and short code)
+                    if (pathParts.length > 1) {
+                        // Return the second segment (short code)
+                        return pathParts[1];
+                    }
+                } else {
+                    // For custom domains, just remove the leading slash
+                    const code = path.substring(1);
+                    if (code) {
+                        return code;
                     }
                 }
+                
+                // If we couldn't extract a short code
+                return null;
+            } catch (e) {
+                console.error("Error extracting short code:", e);
+                return null;
+            }
+        }
+        
+        // Function to validate and clean the short code
+        function cleanShortCode(code) {
+            if (!code) return null;
+            
+            // Remove any file extensions or trailing slashes
+            return code.replace(/\.[^/.]+$/, "").replace(/\/$/, "");
+        }
+        
+        // Function to validate a URL
+        function isValidUrl(url) {
+            try {
+                new URL(url);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        
+        // Function to get URL database from localStorage
+        function getUrlDatabase() {
+            try {
+                const data = localStorage.getItem('sudhanshulinkUrls');
+                return data ? JSON.parse(data) : {};
+            } catch (e) {
+                console.error("Error loading URL database:", e);
                 return {};
             }
-
-            function saveUrlDatabase(database) {
-                if (isLocalStorageAvailable()) {
-                    try {
-                        localStorage.setItem('sudhanshulinkUrls', JSON.stringify(database));
-                    } catch (e) {
-                        console.error('Error saving URL database:', e);
+        }
+        
+        // Main function to handle the redirect
+        function handleRedirect() {
+            try {
+                // Get and clean the short code
+                const rawShortCode = getShortCode();
+                const shortCode = cleanShortCode(rawShortCode);
+                
+                // If there's no valid short code, redirect to the homepage
+                if (!shortCode) {
+                    console.log("No short code found, redirecting to homepage");
+                    window.location.href = "/";
+                    return;
+                }
+                
+                console.log("Processing short code:", shortCode);
+                
+                // Get the URL database from localStorage
+                const urlDatabase = getUrlDatabase();
+                
+                // Check if the short code exists in the database
+                if (urlDatabase[shortCode]) {
+                    // Get the long URL
+                    const longUrl = urlDatabase[shortCode].longUrl;
+                    
+                    // Validate URL
+                    if (!isValidUrl(longUrl)) {
+                        showError("Invalid URL format in the database.");
+                        return;
                     }
-                }
-            }
-
-            // Get URL database from localStorage
-            const urlDatabase = getUrlDatabase();
-
-            // Get the shortcode from the query parameter 's'
-            const urlParams = new URLSearchParams(window.location.search);
-            const shortCode = urlParams.get('s');
-
-            if (shortCode && urlDatabase[shortCode]) {
-                // Increment click count
-                urlDatabase[shortCode].clicks++;
-                saveUrlDatabase(urlDatabase);
-
-                // Check if the URL is valid before redirecting
-                try {
-                    // Make sure the URL is valid
-                    new URL(urlDatabase[shortCode].longUrl);
-
-                    // Redirect to the long URL after a short delay
+                    
+                    console.log("Redirecting to:", longUrl);
+                    
+                    // Increment click count
+                    urlDatabase[shortCode].clicks = (urlDatabase[shortCode].clicks || 0) + 1;
+                    
+                    // Save updated database
+                    try {
+                        localStorage.setItem('sudhanshulinkUrls', JSON.stringify(urlDatabase));
+                    } catch (e) {
+                        console.error("Error saving URL database:", e);
+                    }
+                    
+                    // Redirect to the URL after a short delay
                     setTimeout(() => {
-                        window.location.href = urlDatabase[shortCode].longUrl;
-                    }, 1500);
-                } catch (e) {
-                    // If the URL is invalid, show an error
-                    document.getElementById('redirect-message').style.display = 'none';
-                    document.getElementById('not-found-message').style.display = 'block';
-                    document.getElementById('not-found-message').innerHTML = '<p class="message">Error: The destination URL is invalid.</p><a href="/" class="home-link">Go to Homepage</a>';
+                        // Use window.location.replace to avoid adding to browser history
+                        window.location.replace(longUrl);
+                    }, 1000);
+                } else {
+                    showError("This short link doesn't exist or has been removed.");
                 }
-            } else {
-                // Show not found message if the link doesn't exist
-                document.getElementById('redirect-message').style.display = 'none';
-                document.getElementById('not-found-message').style.display = 'block';
+            } catch (e) {
+                showError("An unexpected error occurred: " + e.message);
             }
-        });
+        }
+        
+        // Start the redirect process when the page loads
+        document.addEventListener('DOMContentLoaded', handleRedirect);
+        
+        // Also try to handle the redirect immediately in case DOMContentLoaded already fired
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            handleRedirect();
+        }
     </script>
 </body>
 </html>
