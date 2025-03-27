@@ -1,419 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>2025 URL Shortener</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="img/favicon.png">
-  <meta name="description" content="A modern URL shortener with 2025 design aesthetics">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SudhanshuLinks | Personal URL Shortener</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <meta name="description" content="A personal URL shortener by Sudhanshu Tiwari">
+    <meta property="og:title" content="SudhanshuLinks">
+    <meta property="og:description" content="A personal URL shortener by Sudhanshu Tiwari">
 </head>
 <body>
-  <!-- Limited Time Offer Banner -->
-  <div class="limited-offer-banner">
     <div class="container">
-      <div class="offer-content">
-        <i class="fas fa-bolt offer-icon"></i>
-        <span class="offer-text">Limited Time: Premium features unlocked for everyone!</span>
-        <div class="countdown" id="offer-countdown">
-          <div class="countdown-item">
-            <span class="countdown-number" id="countdown-days">2</span>
-            <span class="countdown-label">Days</span>
-          </div>
-          <div class="countdown-item">
-            <span class="countdown-number" id="countdown-hours">18</span>
-            <span class="countdown-label">Hours</span>
-          </div>
-          <div class="countdown-item">
-            <span class="countdown-number" id="countdown-minutes">45</span>
-            <span class="countdown-label">Mins</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+        <header>
+            <div class="logo">
+                <h1>Sudhanshu<span>Links</span></h1>
+                <p class="tagline">Your links, simplified.</p>
+            </div>
+        </header>
 
-  <div class="app-container">
-    <!-- Header -->
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <div class="logo">
-            <span class="logo-text">URL<span class="logo-accent">2025</span></span>
-            <span class="logo-by">by Sudhanshu</span>
-          </div>
-          <nav class="main-nav">
-            <ul>
-              <li><a href="#" class="active">Home</a></li>
-              <li><a href="#" id="my-links-nav">My Links</a></li>
-              <li><a href="#about">About</a></li>
-            </ul>
-          </nav>
-          <div class="header-actions">
-            <!-- Dark mode is now the default and only theme -->
-          </div>
-        </div>
-      </div>
-    </header>
+        <main>
+            <section class="url-shortener">
+                <div class="form-container">
+                    <h2>Create Short Link</h2>
+                    <div class="input-group">
+                        <input type="url" id="long-url" placeholder="Paste your long URL here" required>
+                        <div class="custom-path-container">
+                            <span class="domain-prefix" id="domain-prefix">yoursite.com/</span>
+                            <input type="text" id="custom-path" placeholder="custom-name (optional)">
+                        </div>
+                        <button id="shorten-btn">Shorten</button>
+                    </div>
+                    <div class="result-container hidden" id="result-container">
+                        <div class="result-header">
+                            <h3>Your shortened URL</h3>
+                        </div>
+                        <div class="result-content">
+                            <input type="text" id="short-url" readonly>
+                            <button id="copy-btn" title="Copy to clipboard">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button id="qr-btn" title="Generate QR Code">
+                                <i class="fas fa-qrcode"></i>
+                            </button>
+                        </div>
+                        <div id="qr-container" class="hidden">
+                            <div id="qrcode"></div>
+                            <button id="download-qr">Download QR Code</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-    <!-- Main Content -->
-    <main>
-      <!-- Hero Section -->
-      <section class="hero">
-        <div class="container">
-          <div class="hero-content">
-            <div class="creator-badge">
-              <span class="creator-badge-text">Created by Sudhanshu Tiwari</span>
-            </div>
-            <h1 class="hero-title">
-              <span class="gradient-text">Modern URL Shortener</span>
-              <span class="subtitle">Personalized for 2025</span>
-            </h1>
-            <div class="trending-badge">
-              <i class="fas fa-fire"></i> Trending Now
-            </div>
-            <p class="hero-description">Create short, memorable links with your personal touch in seconds</p>
-            <div class="stats-counter">
-              <div class="stat">
-                <span class="stat-number">10M+</span>
-                <span class="stat-label">Links Created</span>
-              </div>
-              <div class="stat">
-                <span class="stat-number">5K+</span>
-                <span class="stat-label">Daily Users</span>
-              </div>
-              <div class="stat">
-                <span class="stat-number">99.9%</span>
-                <span class="stat-label">Uptime</span>
-              </div>
-            </div>
-            <div class="hero-features">
-              <div class="hero-feature">
-                <i class="fas fa-bolt feature-icon"></i>
-                <span>Fast & Reliable</span>
-              </div>
-              <div class="hero-feature">
-                <i class="fas fa-lock feature-icon"></i>
-                <span>Private & Secure</span>
-              </div>
-              <div class="hero-feature">
-                <i class="fas fa-chart-line feature-icon"></i>
-                <span>Click Analytics</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            <section class="recent-links hidden" id="recent-links">
+                <h2>Recent Links</h2>
+                <div class="links-container" id="links-container">
+                    <!-- Links will be added here dynamically -->
+                </div>
+            </section>
+        </main>
 
-      <!-- URL Shortener Form -->
-      <section class="url-shortener">
-        <div class="container">
-          <div class="card">
-            <div id="shortener-form-container">
-              <form id="url-form" class="url-form">
-                <div class="form-group">
-                  <label for="long-url">Enter your long URL</label>
-                  <input type="url" id="long-url" placeholder="https://example.com/very/long/url/that/needs/shortening" required>
-                </div>
-                
-                <div class="form-group">
-                  <button type="button" id="advanced-toggle" class="text-button" onclick="toggleAdvancedOptions()">
-                    <i class="fas fa-cog"></i> Advanced options
-                  </button>
-                </div>
-
-                <div id="advanced-options" style="display: none;">
-                  <div class="form-group">
-                    <label for="custom-code">Custom URL code (optional)</label>
-                    <input type="text" id="custom-code" placeholder="my-custom-url">
-                    <p class="form-hint">Leave empty for an auto-generated code</p>
-                  </div>
-                  
-                  <div class="form-group">
-                    <label for="expiration">Link expiration (days)</label>
-                    <input type="number" id="expiration" placeholder="0" min="0" value="0">
-                    <p class="form-hint">0 = never expires</p>
-                  </div>
-                </div>
-                
-                <div class="form-actions">
-                  <button type="submit" id="shorten-btn" class="primary-button">
-                    <span class="button-text">Shorten URL</span>
-                    <span class="button-icon"><i class="fas fa-link"></i></span>
-                  </button>
-                </div>
-              </form>
-            </div>
+        <section class="about-section">
+            <h2>About SudhanshuLinks</h2>
+            <p>A personal URL shortener created by Sudhanshu Tiwari. Make your links more manageable and trackable with custom short URLs.</p>
+            <p>© 2025 Sudhanshu Tiwari. All rights reserved.</p>
             
-            <div id="result-container" class="result-container hidden">
-              <h2 class="result-title">Your shortened URL is ready!</h2>
-              <p class="result-description">Share it with anyone, anywhere.</p>
-              
-              <div class="short-url-display">
-                <a id="short-url-link" href="#" target="_blank" rel="noopener noreferrer"></a>
-                <button id="copy-btn" class="icon-button" aria-label="Copy to clipboard">
-                  <i class="fas fa-copy"></i>
-                </button>
-              </div>
-              
-              <div class="result-actions">
-                <div class="qr-container">
-                  <p class="qr-label">QR Code</p>
-                  <div id="qr-code" class="qr-code"></div>
-                </div>
-                
-                <div class="action-buttons">
-                  <button id="new-url-btn" class="secondary-button">
-                    <span class="button-text">Shorten another URL</span>
-                  </button>
-                  <button id="view-links-btn" class="outline-button">
-                    <span class="button-text">View all my links</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Social Proof Section -->
-      <section class="social-proof">
-        <div class="container">
-          <div class="social-proof-header">
-            <div class="social-proof-badge">
-              <i class="fas fa-star"></i> Trusted by thousands
-            </div>
-            <h2 class="social-proof-title">Join the community of satisfied users</h2>
-          </div>
-
-          <div class="testimonials">
-            <div class="testimonial">
-              <div class="testimonial-content">
-                <p>"This URL shortener changed my social media game completely. So easy to use!"</p>
-              </div>
-              <div class="testimonial-author">
-                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah J." class="testimonial-avatar">
-                <div class="testimonial-info">
-                  <span class="testimonial-name">Sarah J.</span>
-                  <span class="testimonial-title">Social Media Manager</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="testimonial">
-              <div class="testimonial-content">
-                <p>"I've tried many URL shorteners, but this one is by far the most elegant and efficient."</p>
-              </div>
-              <div class="testimonial-author">
-                <img src="https://randomuser.me/api/portraits/men/46.jpg" alt="Michael T." class="testimonial-avatar">
-                <div class="testimonial-info">
-                  <span class="testimonial-name">Michael T.</span>
-                  <span class="testimonial-title">Tech Blogger</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="testimonial">
-              <div class="testimonial-content">
-                <p>"The dark mode is so sleek! Perfect for sharing links in my development tutorials."</p>
-              </div>
-              <div class="testimonial-author">
-                <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Jessica K." class="testimonial-avatar">
-                <div class="testimonial-info">
-                  <span class="testimonial-name">Jessica K.</span>
-                  <span class="testimonial-title">Web Developer</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Features Section -->
-      <section class="features">
-        <div class="container">
-          <div class="features-grid">
-            <div class="feature-card">
-              <div class="feature-icon">
-                <i class="fas fa-bolt"></i>
-              </div>
-              <h3 class="feature-title">Lightning Fast</h3>
-              <p class="feature-description">Create and share shortened URLs in seconds with our optimized 2025 technology.</p>
-            </div>
-
-            <div class="feature-card">
-              <div class="feature-icon">
-                <i class="fas fa-shield-alt"></i>
-              </div>
-              <h3 class="feature-title">Secure & Private</h3>
-              <p class="feature-description">Your links are stored locally on your device, ensuring maximum privacy.</p>
-            </div>
-
-            <div class="feature-card">
-              <div class="feature-icon">
-                <i class="fas fa-chart-line"></i>
-              </div>
-              <h3 class="feature-title">Link Tracking</h3>
-              <p class="feature-description">Track how many times your shortened links have been clicked.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- My Links Section (Hidden by default) -->
-      <section id="my-links-section" class="my-links hidden">
-        <div class="container">
-          <div class="section-header">
-            <h2 class="section-title">My Links</h2>
-            <div class="section-actions">
-              <button id="clear-all-btn" class="danger-button">
-                <span class="button-text">Clear All</span>
-                <span class="button-icon"><i class="fas fa-trash"></i></span>
-              </button>
-            </div>
-          </div>
-          
-          <div class="links-container">
-            <div id="links-list" class="links-list">
-              <!-- Links will be dynamically added here -->
-            </div>
-            
-            <div id="empty-links" class="empty-links">
-              <div class="empty-icon">
-                <i class="fas fa-link-slash"></i>
-              </div>
-              <p class="empty-text">You don't have any shortened links yet</p>
-              <button id="create-first-link" class="primary-button">Create your first link</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- About Section -->
-      <section id="about" class="about">
-        <div class="container">
-          <div class="about-content">
-            <h2 class="section-title">About URL2025</h2>
-            <p class="about-description">
-              URL2025 is a modern, client-side URL shortener designed with the aesthetics and technology of 2025.
-              Unlike traditional URL shorteners, URL2025 stores all your links locally on your device,
-              ensuring complete privacy and control over your data. Experience the future of link sharing today.
-            </p>
-            <div class="about-features">
-              <div class="about-feature">
-                <div class="about-feature-icon">
-                  <i class="fas fa-database"></i>
-                </div>
-                <div class="about-feature-text">
-                  <h3>Local Storage</h3>
-                  <p>All your links are stored securely in your browser's local storage.</p>
-                </div>
-              </div>
-              <div class="about-feature">
-                <div class="about-feature-icon">
-                  <i class="fas fa-palette"></i>
-                </div>
-                <div class="about-feature-text">
-                  <h3>2025 Design</h3>
-                  <p>Enjoy a futuristic user interface with modern design elements.</p>
-                </div>
-              </div>
-              <div class="about-feature">
-                <div class="about-feature-icon">
-                  <i class="fas fa-code"></i>
-                </div>
-                <div class="about-feature-text">
-                  <h3>Open Source</h3>
-                  <p>Built with vanilla JavaScript, HTML, and CSS - no frameworks needed.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-logo">
-            <span class="logo-text">URL<span class="logo-accent">2025</span></span>
-          </div>
-          <div class="footer-links">
-            <ul>
-              <li><a href="#">Privacy Policy</a></li>
-              <li><a href="#">Terms of Service</a></li>
-              <li><a href="#">Contact</a></li>
-            </ul>
-          </div>
-          <div class="footer-social">
-            <p class="footer-creator">Created by Sudhanshu Tiwari</p>
             <div class="social-links">
-              <a href="https://x.com/sudhanshusX" target="_blank" rel="noopener noreferrer" title="Twitter/X">
-                <i class="fab fa-x-twitter"></i>
-              </a>
-              <a href="https://www.linkedin.com/in/tiwari-sudhanshu/" target="_blank" rel="noopener noreferrer" title="LinkedIn">
-                <i class="fab fa-linkedin"></i>
-              </a>
-              <a href="https://github.com/sudhanshutiwari264" target="_blank" rel="noopener noreferrer" title="GitHub">
-                <i class="fab fa-github"></i>
-              </a>
+                <a href="https://x.com/sudhanshusX" target="_blank" title="Twitter/X">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://www.linkedin.com/in/tiwari-sudhanshu/" target="_blank" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://github.com/sudhanshutiwari264" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
             </div>
-          </div>
-          <div class="footer-copyright">
-            <p>&copy; 2025 URL2025 - Designed & Developed by <span class="footer-signature">Sudhanshu Tiwari</span></p>
-            <div class="footer-badge">
-              <span class="footer-badge-icon">❤️</span> Made with passion
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  </div>
-
-  <!-- Modals -->
-  <div id="delete-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">Delete Link</h3>
-        <button class="modal-close" aria-label="Close modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this link? This action cannot be undone.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="secondary-button modal-cancel">Cancel</button>
-        <button class="danger-button modal-confirm">Delete</button>
-      </div>
+        </section>
     </div>
-  </div>
 
-  <div id="clear-all-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">Clear All Links</h3>
-        <button class="modal-close" aria-label="Close modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete all your links? This action cannot be undone.</p>
-      </div>
-      <div class="modal-footer">
-        <button class="secondary-button modal-cancel">Cancel</button>
-        <button class="danger-button modal-confirm">Clear All</button>
-      </div>
+    <div id="notification" class="notification hidden">
+        <p id="notification-message"></p>
     </div>
-  </div>
 
-  <!-- Toast Notifications -->
-  <div id="toast-container" class="toast-container"></div>
-
-  <!-- Scripts -->
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-  <script src="js/url-shortener.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <!-- Backup QR code library in case the first one fails -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

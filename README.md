@@ -1,67 +1,67 @@
-# URL2025 - Modern URL Shortener
+# SudhanshuLinks - Personal URL Shortener
 
-A client-side URL shortener with 2025 design aesthetics that stores links in your browser's local storage.
+A personalized URL shortener created by Sudhanshu Tiwari. This tool allows you to create custom short links that are easy to share and remember.
+
+![SudhanshuLinks](https://via.placeholder.com/800x400?text=SudhanshuLinks)
 
 ## Features
 
-- **Modern Design**: Clean, futuristic interface with 2025 design elements
-- **Dark Mode**: Toggle between light and dark themes
-- **Local Storage**: All links are stored locally in your browser
-- **Custom URLs**: Create custom short URLs or use auto-generated ones
-- **QR Codes**: Generate QR codes for your shortened links
-- **Link Expiration**: Set expiration dates for temporary links
-- **Link Management**: View, copy, and delete your shortened links
-- **Click Tracking**: Track how many times your links have been clicked
-- **Responsive**: Works on desktop, tablet, and mobile devices
-
-## Technology
-
-- **HTML5**: Modern semantic markup
-- **CSS3**: Advanced styling with custom properties and animations
-- **JavaScript**: Vanilla JS with no frameworks or libraries
-- **LocalStorage API**: For storing links in the browser
-- **QRCode.js**: For generating QR codes
+- Create short URLs with custom paths
+- Generate QR codes for your short links
+- Track the number of clicks on your links
+- Copy links to clipboard with one click
+- Responsive design that works on all devices
+- No server required - works entirely in the browser
+- Personalized with your branding
 
 ## How It Works
 
-1. Enter a long URL you want to shorten
-2. Optionally customize your short URL or set an expiration date
-3. Click "Shorten URL" to generate your short link
-4. Copy the link or scan the QR code to share
-5. All your links are saved in your browser's local storage
-6. View and manage all your links in the "My Links" section
+SudhanshuLinks uses browser local storage to save your shortened URLs. When someone visits a short link (in the format `yourdomain.com/?s=shortcode`), the application checks if the shortcode exists in the database and redirects to the corresponding long URL.
 
-## Hosting
+## Deployment Instructions
 
-This application is designed to be hosted on GitHub Pages. It's a static site that runs entirely in the browser with no server-side components.
+### Deploying to GitHub Pages
 
-## Installation
+1. Fork this repository to your GitHub account
+2. Go to the repository settings
+3. Navigate to the "Pages" section
+4. Select the branch you want to deploy (usually `main` or `master`)
+5. Click "Save"
+6. Your URL shortener will be available at `https://yourusername.github.io/repository-name/`
 
-1. Clone this repository
-2. Open `index.html` in your browser
-3. That's it! No build process or dependencies required
+### Using a Custom Domain
+
+1. After deploying to GitHub Pages, go to the repository settings
+2. In the "Pages" section, enter your custom domain
+3. Update your domain's DNS settings:
+   - Add an A record pointing to GitHub Pages IP addresses
+   - Or add a CNAME record pointing to `yourusername.github.io`
+4. Wait for DNS propagation (may take up to 48 hours)
 
 ## Usage
 
-Simply open the URL in your browser and start shortening links. All data is stored locally in your browser.
+1. Enter the long URL you want to shorten
+2. (Optional) Enter a custom path for your short URL
+3. Click "Shorten"
+4. Copy the generated short URL or QR code
+5. Share your short link!
 
-## Privacy
+## Limitations
 
-Since all data is stored locally in your browser:
-- No data is sent to any server
-- Your links are completely private
-- No tracking or analytics beyond the click counter for your own links
-- Your data remains on your device
+- Since this application uses browser local storage, your shortened URLs are stored in the browser you use to create them
+- The application works best with a custom domain
+- GitHub Pages has usage limits, so this is best for personal use rather than high-traffic applications
 
-## License
+## Connect with Sudhanshu
 
-MIT License
-
-## Created By
-
-This project was created by Sudhanshu Tiwari as a modern URL shortener for 2025, focusing on privacy, simplicity, and a futuristic design aesthetic.
-
-### Connect with me:
 - Twitter/X: [https://x.com/sudhanshusX](https://x.com/sudhanshusX)
 - LinkedIn: [https://www.linkedin.com/in/tiwari-sudhanshu/](https://www.linkedin.com/in/tiwari-sudhanshu/)
 - GitHub: [https://github.com/sudhanshutiwari264](https://github.com/sudhanshutiwari264)
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+© 2025 Sudhanshu Tiwari. All rights reserved.
