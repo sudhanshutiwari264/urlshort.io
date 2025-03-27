@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Music Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="simple-styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-music"></i>
+                <h1>Mood<span>Music</span></h1>
+            </div>
+            <p class="tagline">Discover music that matches your mood</p>
+        </header>
+
+        <section class="input-section">
+            <div class="mood-input-container">
+                <h2>How are you feeling today?</h2>
+                <textarea id="mood-input" placeholder="Describe your mood or feelings... (e.g., 'I'm feeling happy and energetic today')"></textarea>
+                <button id="analyze-btn" class="primary-btn">
+                    <i class="fas fa-search"></i>
+                    Analyze My Mood
+                </button>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <div class="mood-analysis">
+                <h2>Your Mood Analysis</h2>
+                <div class="mood-card">
+                    <div class="mood-emoji" id="mood-emoji">😊</div>
+                    <div class="mood-details">
+                        <h3 id="mood-title">Happy</h3>
+                        <p id="mood-description">You're feeling positive and upbeat. Here's a playlist to match your happy mood!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="playlist-container">
+                <h2>Your Personalized Playlist</h2>
+                <div class="playlist-controls">
+                    <button class="control-btn" id="play-all-btn">
+                        <i class="fas fa-play"></i>
+                        Play All
+                    </button>
+                    <button class="control-btn" id="shuffle-btn">
+                        <i class="fas fa-random"></i>
+                        Shuffle
+                    </button>
+                </div>
+                <div class="tracks-container">
+                    <!-- Tracks will be added here dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section">
+            <h2>Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-brain"></i>
+                    <h3>Mood Analysis</h3>
+                    <p>Our AI analyzes your mood from your text and creates a personalized music experience.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-music"></i>
+                    <h3>Free Music</h3>
+                    <p>Access a library of free, open-source music based on your mood.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-headphones-alt"></i>
+                    <h3>Easy Playback</h3>
+                    <p>Play individual tracks or entire playlists with a single click.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-random"></i>
+                    <h3>Shuffle Mode</h3>
+                    <p>Mix up your playlist for a fresh listening experience every time.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">
+                        <i class="fas fa-music"></i>
+                        <h2>MoodMusic</h2>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">About</a>
+                        <a href="#" class="footer-link">Privacy</a>
+                        <a href="#" class="footer-link">Terms</a>
+                        <a href="#" class="footer-link">Contact</a>
+                    </div>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2023 MoodMusic. All rights reserved.
+            </div>
+        </footer>
+    </div>
+
+    <script src="simple-app.js"></script>
+</body>
+</html>
