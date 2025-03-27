@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mood Music Player</title>
+    <title>Mood Music NFT Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -12,18 +12,21 @@
     <div class="app-container">
         <header>
             <div class="logo">
-                <i class="fas fa-music"></i>
+                <i class="fas fa-headphones-alt"></i>
                 <h1>Mood<span>Music</span></h1>
             </div>
-            <p class="tagline">Discover music that matches your mood</p>
+            <p class="tagline">Discover NFT music that matches your mood</p>
+            <button class="wallet-btn">
+                <i class="fas fa-wallet"></i> Connect Wallet
+            </button>
         </header>
 
         <section class="input-section">
             <div class="mood-input-container">
-                <h2>How are you feeling today?</h2>
+                <h2><i class="fas fa-heart"></i> How are you feeling today?</h2>
                 <textarea id="mood-input" placeholder="Describe your mood or feelings... (e.g., 'I'm feeling happy and energetic today')"></textarea>
                 <button id="analyze-btn" class="primary-btn">
-                    <i class="fas fa-search"></i>
+                    <i class="fas fa-magic"></i>
                     Analyze My Mood
                 </button>
             </div>
@@ -31,7 +34,7 @@
 
         <section class="results-section">
             <div class="mood-analysis">
-                <h2>Your Mood Analysis</h2>
+                <h2><i class="fas fa-chart-pie"></i> Your Mood Analysis</h2>
                 <div class="mood-card">
                     <div class="mood-emoji" id="mood-emoji">😊</div>
                     <div class="mood-details">
@@ -42,7 +45,7 @@
             </div>
 
             <div class="playlist-container">
-                <h2>Your Personalized Playlist</h2>
+                <h2><i class="fas fa-compact-disc"></i> Your Personalized Playlist</h2>
                 <div class="playlist-controls">
                     <button class="control-btn" id="play-all-btn">
                         <i class="fas fa-play"></i>
@@ -52,71 +55,35 @@
                         <i class="fas fa-random"></i>
                         Shuffle
                     </button>
-                    <button class="control-btn" id="share-playlist-btn">
-                        <i class="fas fa-share-alt"></i>
-                        Share Playlist
-                    </button>
-                    <button class="control-btn" id="save-playlist-btn">
-                        <i class="fas fa-save"></i>
-                        Save Playlist
-                    </button>
                 </div>
                 <div class="tracks-container">
-                    <div class="tracks-loading-message">
-                        <p>Loading your personalized tracks...</p>
-                    </div>
+                    <!-- Tracks will be added here dynamically -->
                 </div>
             </div>
         </section>
 
         <section class="features-section">
-            <h2>Features</h2>
+            <h2>⚡ Web3 Features</h2>
             <div class="features-grid">
                 <div class="feature-card">
                     <i class="fas fa-brain"></i>
-                    <h3>Mood Analysis</h3>
-                    <p>Our AI analyzes your mood from your text and creates a personalized music experience.</p>
+                    <h3>AI Mood Analysis</h3>
+                    <p>Our decentralized AI analyzes your mood from your text and creates a personalized NFT music experience tailored just for you.</p>
                 </div>
                 <div class="feature-card">
-                    <i class="fas fa-music"></i>
-                    <h3>YouTube Music Integration</h3>
-                    <p>Access millions of songs from YouTube Music's vast library based on your mood.</p>
+                    <i class="fas fa-cube"></i>
+                    <h3>NFT Music Library</h3>
+                    <p>Access our blockchain-verified library of high-quality music NFTs that perfectly match your current emotional state.</p>
                 </div>
                 <div class="feature-card">
-                    <i class="fas fa-headphones-alt"></i>
-                    <h3>Multi-Source Playback</h3>
-                    <p>Play music from YouTube Music, Deezer, and other sources all in one place.</p>
+                    <i class="fas fa-wallet"></i>
+                    <h3>Wallet Integration</h3>
+                    <p>Connect your crypto wallet to collect and own your favorite music NFTs. Secure ownership with smart contracts.</p>
                 </div>
                 <div class="feature-card">
-                    <i class="fas fa-share-alt"></i>
-                    <h3>Easy Sharing</h3>
-                    <p>Share your mood and playlist with friends on social media or via direct link.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="how-it-works-section">
-            <h2>How It Works</h2>
-            <div class="steps-container">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Describe Your Mood</h3>
-                    <p>Tell us how you're feeling in your own words.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>AI Analysis</h3>
-                    <p>Our AI analyzes your text to understand your emotional state.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Music Matching</h3>
-                    <p>We match your mood with the perfect songs from YouTube Music and other sources.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Enjoy & Share</h3>
-                    <p>Listen to your personalized playlist and share it with others.</p>
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Token Rewards</h3>
+                    <p>Earn $MOOD tokens for daily usage and participation in our decentralized music ecosystem.</p>
                 </div>
             </div>
         </section>
@@ -125,28 +92,37 @@
             <div class="footer-content">
                 <div>
                     <div class="footer-logo">
-                        <i class="fas fa-music"></i>
+                        <i class="fas fa-headphones-alt"></i>
                         <h2>MoodMusic</h2>
                     </div>
                     <div class="footer-links">
-                        <a href="#" class="footer-link">About</a>
-                        <a href="#" class="footer-link">Privacy</a>
-                        <a href="#" class="footer-link">Terms</a>
-                        <a href="#" class="footer-link">Contact</a>
+                        <a href="#" class="footer-link">dApp</a>
+                        <a href="#" class="footer-link">Whitepaper</a>
+                        <a href="#" class="footer-link">Smart Contracts</a>
+                        <a href="#" class="footer-link">DAO</a>
                     </div>
                 </div>
                 <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/tiwari-sudhanshu/" class="social-link" title="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com/sudhanshutiwari264" class="social-link" title="GitHub" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://twitter.com/sudhanshusX" class="social-link" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/minetechjourney" class="social-link" title="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
             <div class="copyright">
-                &copy; 2023 MoodMusic. All rights reserved.
+                &copy; 2023 MoodMusic by Sudhanshu Tiwari. All rights reserved. Built on <i class="fab fa-ethereum"></i> Ethereum. Made with <i class="fas fa-heart"></i> for Web3 music lovers.
             </div>
         </footer>
     </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Connecting to blockchain...</p>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification">Transaction successful!</div>
 
     <script src="app.js"></script>
 </body>

@@ -9,16 +9,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const tracksContainer = document.querySelector('.tracks-container');
     const playAllBtn = document.getElementById('play-all-btn');
     const shuffleBtn = document.getElementById('shuffle-btn');
-    const sharePlaylistBtn = document.getElementById('share-playlist-btn');
-    const savePlaylistBtn = document.getElementById('save-playlist-btn');
 
-    // Create loading overlay dynamically
+    // Audio player state
+    let currentAudio = null;
+    let currentlyPlayingId = null;
+
+    // Create loading overlay
     const loadingOverlay = document.createElement('div');
-    loadingOverlay.id = 'loading-overlay';
     loadingOverlay.className = 'loading-overlay';
-    loadingOverlay.innerHTML = '<div class="loading-spinner"></div><div id="loading-text" class="loading-text">Loading...</div>';
+    loadingOverlay.innerHTML = '<div class="spinner"></div><p>Analyzing your mood...</p>';
     document.body.appendChild(loadingOverlay);
-    const loadingText = document.getElementById('loading-text');
+
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    document.body.appendChild(notification);
 
     // Current playlist data
     const currentPlaylist = {

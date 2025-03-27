@@ -1,14 +1,27 @@
 :root {
     --primary-color: #6c5ce7;
-    --secondary-color: #fd79a8;
-    --accent-color: #00cec9;
-    --background-color: #f9f9f9;
-    --card-color: #ffffff;
-    --text-color: #333333;
-    --light-text-color: #666666;
-    --border-color: #e0e0e0;
-    --error-color: #e74c3c;
-    --success-color: #2ecc71;
+    --primary-light: #a29bfe;
+    --primary-dark: #4834d4;
+    --secondary-color: #00cec9;
+    --secondary-light: #81ecec;
+    --secondary-dark: #00b5ad;
+    --accent-color: #ff7675;
+    --accent-light: #fab1a0;
+    --accent-dark: #e84393;
+    --background-color: #0f0e13;
+    --card-color: rgba(23, 21, 34, 0.8);
+    --card-border: rgba(123, 97, 255, 0.2);
+    --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --text-color: #f1f2f6;
+    --light-text-color: #a4b0be;
+    --border-color: rgba(123, 97, 255, 0.3);
+    --error-color: #ff4757;
+    --success-color: #2ed573;
+    --neon-glow: 0 0 10px rgba(108, 92, 231, 0.8), 0 0 20px rgba(108, 92, 231, 0.6), 0 0 30px rgba(108, 92, 231, 0.4);
+    --neon-text-glow: 0 0 5px rgba(108, 92, 231, 0.7);
+    --gradient-primary: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    --gradient-secondary: linear-gradient(45deg, var(--accent-color), var(--accent-dark));
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
 }
 
 * {
@@ -22,6 +35,28 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(108, 92, 231, 0.15) 0%, transparent 30%),
+        radial-gradient(circle at 90% 30%, rgba(0, 206, 201, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(255, 118, 117, 0.1) 0%, transparent 30%),
+        url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(108, 92, 231, 0.05)' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-attachment: fixed;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(217deg, rgba(108, 92, 231, 0.05), rgba(108, 92, 231, 0) 70%),
+        linear-gradient(127deg, rgba(0, 206, 201, 0.05), rgba(0, 206, 201, 0) 70%),
+        linear-gradient(336deg, rgba(255, 118, 117, 0.05), rgba(255, 118, 117, 0) 70%);
+    z-index: -1;
 }
 
 .app-container {
