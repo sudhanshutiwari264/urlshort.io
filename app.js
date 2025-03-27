@@ -214,8 +214,28 @@ document.addEventListener('DOMContentLoaded', function() {
     async function fetchTracksFromAPI(genres) {
         // Randomly select one of the genres
         const randomGenre = genres[Math.floor(Math.random() * genres.length)];
-        
+
         try {
+            // Try to fetch from YouTube
+            try {
+                const youtubeTracks = await fetchFromYouTube(randomGenre);
+                if (youtubeTracks && youtubeTracks.length > 0) {
+                    return youtubeTracks;
+                }
+            } catch (youtubeError) {
+                console.warn('YouTube API error, trying next source:', youtubeError);
+            }
+
+            // Try to fetch from Open Source Audio Library
+            try {
+                const openSourceTracks = await fetchFromOpenSourceAudio(randomGenre);
+                if (openSourceTracks && openSourceTracks.length > 0) {
+                    return openSourceTracks;
+                }
+            } catch (openSourceError) {
+                console.warn('Open Source Audio error, trying next source:', openSourceError);
+            }
+
             // Try to fetch from Free Music Archive
             try {
                 const fmaTracks = await fetchFromFreeMusicArchive(randomGenre);
@@ -225,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (fmaError) {
                 console.warn('Free Music Archive error, trying next source:', fmaError);
             }
-            
+
             // Try to fetch from Pixabay
             try {
                 const pixabayTracks = await fetchFromPixabay(randomGenre);
@@ -235,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (pixabayError) {
                 console.warn('Pixabay API error, trying next source:', pixabayError);
             }
-            
+
             // Try to fetch from ccMixter
             try {
                 const ccMixterTracks = await fetchFromCCMixter(randomGenre);
@@ -245,12 +265,120 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (ccMixterError) {
                 console.warn('ccMixter API error, falling back to guaranteed tracks:', ccMixterError);
             }
-            
+
             // If all APIs fail, use guaranteed tracks
             return generateGuaranteedTracks(currentPlaylist.mood, 8);
-            
+
         } catch (error) {
             console.error('API Error:', error);
+            throw error;
+        }
+    }
+
+    // Function to fetch tracks from YouTube
+    async function fetchFromYouTube(genre) {
+        try {
+            // Map our genre to YouTube search terms
+            const moodToYouTubeMap = {
+                'happy': 'happy music no copyright',
+                'excited': 'energetic music no copyright',
+                'relaxed': 'relaxing music no copyright',
+                'sad': 'sad music no copyright',
+                'angry': 'powerful music no copyright',
+                'tired': 'ambient music no copyright',
+                'focused': 'concentration music no copyright',
+                'romantic': 'romantic music no copyright'
+            };
+
+            // Use the current mood for better results
+            const searchTerm = moodToYouTubeMap[currentPlaylist.mood] || `${genre} music no copyright`;
+
+            // In a real app, you would use the YouTube Data API with your API key
+            // For this demo, we'll use a static JSON file with YouTube data
+            const response = await fetch('/public-music-data/youtube-sample.json');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch from YouTube');
+            }
+
+            const data = await response.json();
+
+            // Get all tracks and shuffle them
+            let tracks = [...data.items];
+
+            // Shuffle array
+            for (let i = tracks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+            }
+
+            // Limit to 8 tracks and format the response
+            return tracks.slice(0, 8).map(track => ({
+                id: `youtube-${track.id}`,
+                title: track.title,
+                artist: track.channelTitle,
+                album: 'YouTube Music',
+                cover: track.thumbnail || `https://picsum.photos/seed/youtube${track.id}/300/300`,
+                preview: null, // YouTube videos need to be embedded, not directly played
+                embedUrl: `https://www.youtube.com/embed/${track.id}?autoplay=1`,
+                sourceType: 'youtube'
+            }));
+
+        } catch (error) {
+            console.error('YouTube API error:', error);
+            throw error;
+        }
+    }
+
+    // Function to fetch tracks from Open Source Audio Library
+    async function fetchFromOpenSourceAudio(genre) {
+        try {
+            // Map our genre to search terms
+            const genreMap = {
+                'pop': 'pop',
+                'rock': 'rock',
+                'electronic': 'electronic',
+                'classical': 'classical',
+                'jazz': 'jazz',
+                'hip-hop': 'hip-hop',
+                'ambient': 'ambient',
+                'folk': 'folk'
+            };
+
+            const searchGenre = genreMap[genre.toLowerCase()] || genre;
+
+            // In a real app, you would use an API for open source audio
+            // For this demo, we'll use a static JSON file
+            const response = await fetch('/public-music-data/opensourceaudio-sample.json');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch from Open Source Audio Library');
+            }
+
+            const data = await response.json();
+
+            // Get all tracks and shuffle them
+            let tracks = [...data.tracks];
+
+            // Shuffle array
+            for (let i = tracks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tracks[i], tracks[j]] = [tracks[j], tracks[i]];
+            }
+
+            // Limit to 8 tracks and format the response
+            return tracks.slice(0, 8).map(track => ({
+                id: `opensrc-${track.id}`,
+                title: track.title,
+                artist: track.artist,
+                album: track.album || 'Open Source Audio',
+                cover: track.cover || `https://picsum.photos/seed/opensrc${track.id}/300/300`,
+                preview: track.audio_url,
+                sourceType: 'opensourceaudio'
+            }));
+
+        } catch (error) {
+            console.error('Open Source Audio error:', error);
             throw error;
         }
     }
@@ -527,47 +655,50 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to display tracks in the UI
     async function displayTracks(tracks) {
         tracksContainer.innerHTML = '';
-        
+
         // Show loading message while we verify tracks
         const loadingMessage = document.createElement('div');
         loadingMessage.className = 'tracks-loading-message';
         loadingMessage.textContent = 'Verifying playable tracks...';
         tracksContainer.appendChild(loadingMessage);
-        
-        // Filter tracks to only include those with working preview URLs
+
+        // Filter tracks to only include those with working preview URLs or YouTube embeds
         const verifiedTracks = [];
-        
-        // First, add all tracks that have preview URLs from our mock data
-        // These are guaranteed to work since we control them
-        const tracksWithPreviews = tracks.filter(track => track.preview);
-        
+
+        // Add YouTube tracks directly (they don't need verification)
+        const youtubeTracks = tracks.filter(track => track.sourceType === 'youtube');
+        verifiedTracks.push(...youtubeTracks);
+
+        // Process tracks with preview URLs
+        const tracksWithPreviews = tracks.filter(track => track.preview && !track.sourceType);
+
         // For each track with a preview, verify it's playable
         for (const track of tracksWithPreviews) {
             try {
                 // Try to create an audio element and load the metadata
                 const audio = new Audio();
-                
+
                 // Create a promise that resolves when metadata is loaded or errors
                 const canPlay = new Promise((resolve, reject) => {
                     audio.addEventListener('loadedmetadata', () => resolve(true));
                     audio.addEventListener('error', () => reject(new Error('Cannot play audio')));
-                    
+
                     // Set a timeout in case the audio takes too long to load
                     setTimeout(() => reject(new Error('Audio load timeout')), 3000);
                 });
-                
+
                 // Set the source and start loading
                 audio.src = track.preview;
                 audio.load();
-                
+
                 // Wait for the audio to be verified
                 await canPlay;
-                
+
                 // If we get here, the audio is playable
                 verifiedTracks.push(track);
             } catch (error) {
                 console.warn(`Track "${track.title}" preview not playable:`, error);
-                
+
                 // If the original preview doesn't work, assign a guaranteed working preview
                 const fallbackPreview = getGuaranteedPreview(track.id, currentPlaylist.mood);
                 if (fallbackPreview) {
@@ -576,54 +707,90 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-        
+
         // If we don't have enough verified tracks, add some guaranteed ones
         if (verifiedTracks.length < 5) {
             const guaranteedTracks = generateGuaranteedTracks(currentPlaylist.mood, 8 - verifiedTracks.length);
             verifiedTracks.push(...guaranteedTracks);
         }
-        
+
         // Update the current playlist with verified tracks
         currentPlaylist.tracks = verifiedTracks;
-        
+
         // Remove loading message
         tracksContainer.innerHTML = '';
-        
+
         // Display the verified tracks
         verifiedTracks.forEach(track => {
             const trackCard = document.createElement('div');
             trackCard.className = 'track-card';
             trackCard.dataset.trackId = track.id;
-            
-            trackCard.innerHTML = `
-                <img src="${track.cover}" alt="${track.title}" class="track-image">
-                <div class="track-info">
-                    <div class="track-title">${track.title}</div>
-                    <div class="track-artist">${track.artist}</div>
-                    <div class="track-controls">
-                        <button class="track-btn play-track" title="Play">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        <button class="track-btn add-to-favorites" title="Add to favorites">
-                            <i class="far fa-heart"></i>
-                        </button>
-                        <button class="track-btn share-track" title="Share">
-                            <i class="fas fa-share-alt"></i>
-                        </button>
+
+     // Different layout for YouTube tracks
+            if (track.sourceType === 'youtube') {
+                trackCard.innerHTML = `
+                    <div class="track-youtube-container">
+                        <img src="${track.cover}" alt="${track.title}" class="track-image youtube-thumbnail">
+                        <div class="youtube-play-overlay">
+                            <i class="fab fa-youtube"></i>
+                        </div>
                     </div>
-                </div>
-            `;
-            
+                           <div class="track-info">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-artist">${track.artist}</div>
+                        <div class="track-controls">
+                            <button class="track-btn play-track" title="Play on YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </button>
+                            <button class="track-btn add-to-favorites" title="Add to favorites">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="track-btn share-track" title="Share">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                trackCard.innerHTML = `
+                    <img src="${track.cover}" alt="${track.title}" class="track-image">
+                    <div class="track-info">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-artist">${track.artist}</div>
+                        <div class="track-controls">
+                            <button class="track-btn play-track" title="Play">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="track-btn add-to-favorites" title="Add to favorites">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="track-btn share-track" title="Share">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
             tracksContainer.appendChild(trackCard);
-            
+
             // Add event listeners to track buttons
             const playBtn = trackCard.querySelector('.play-track');
             const favoriteBtn = trackCard.querySelector('.add-to-favorites');
             const shareBtn = trackCard.querySelector('.share-track');
-            
+
             playBtn.addEventListener('click', () => playTrack(track));
             favoriteBtn.addEventListener('click', (e) => toggleFavorite(e, track));
             shareBtn.addEventListener('click', () => shareTrack(track));
+
+            // For YouTube tracks, also make the thumbnail clickable
+            if (track.sourceType === 'youtube') {
+                const thumbnail = trackCard.querySelector('.youtube-thumbnail');
+                const overlay = trackCard.querySelector('.youtube-play-overlay');
+
+                thumbnail.addEventListener('click', () => playTrack(track));
+                overlay.addEventListener('click', () => playTrack(track));
+            }
         });
     }
 
@@ -727,14 +894,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // YouTube player modal
+    const youtubeModal = document.createElement('div');
+    youtubeModal.className = 'modal youtube-modal';
+    youtubeModal.innerHTML = `
+        <div class="modal-content youtube-modal-content">
+            <span class="close-modal" id="close-youtube-modal">&times;</span>
+            <div id="youtube-player-container"></div>
+        </div>
+    `;
+    document.body.appendChild(youtubeModal);
+
+    // Close YouTube modal event
+    document.getElementById('close-youtube-modal').addEventListener('click', () => {
+        youtubeModal.style.display = 'none';
+        document.getElementById('youtube-player-container').innerHTML = '';
+    });
+
     // Function to play a track
     function playTrack(track) {
         console.log('Playing track:', track.title);
-        
+
+        // Handle YouTube tracks differently
+        if (track.sourceType === 'youtube') {
+            playYouTubeTrack(track);
+            return;
+        }
+
         // If there's already a track playing, stop it
         if (currentAudio) {
             currentAudio.pause();
-            
+
             // If the same track was clicked, just pause it and update UI
             if (currentlyPlayingId === track.id) {
                 updatePlayButtonUI(track.id, false);
@@ -743,15 +933,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 showNotification(`Paused: ${track.title}`);
                 return;
             }
-            
+
             // Update previous track's button
             if (currentlyPlayingId) {
                 updatePlayButtonUI(currentlyPlayingId, false);
             }
-            
+
             currentAudio = null;
         }
-        
+
         // If the track has a preview URL
         if (track.preview) {
             // Show loading indicator on the play button
@@ -760,7 +950,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const playButton = trackCard.querySelector('.play-track i');
                 playButton.className = 'fas fa-spinner fa-spin';
             }
-            
+
             // Use preloaded audio if available, otherwise create new
             if (preloadedAudio[track.id]) {
                 currentAudio = preloadedAudio[track.id];
@@ -768,9 +958,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 currentAudio = new Audio(track.preview);
             }
-            
+
             currentlyPlayingId = track.id;
-            
+
             // Set up event listeners
             const setupAudioEvents = () => {
                 // When track ends
@@ -779,12 +969,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentlyPlayingId = null;
                     updatePlayButtonUI(track.id, false);
                 });
-                
+
                 // When track is ready to play
                 currentAudio.addEventListener('canplay', () => {
                     updatePlayButtonUI(track.id, true);
                 });
-                
+
                 // When track errors
                 currentAudio.addEventListener('error', (e) => {
                     console.error('Audio error:', e);
@@ -792,24 +982,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     currentAudio = null;
                     currentlyPlayingId = null;
                     updatePlayButtonUI(track.id, false);
-                    
+
                     // Try fallback
                     setTimeout(() => {
                         playFallbackAudio(track);
                     }, 500);
                 });
             };
-            
+
             setupAudioEvents();
-            
+
             // Play the track
             const playPromise = currentAudio.play();
-            
+
             if (playPromise !== undefined) {
                 playPromise
                     .then(() => {
                         showNotification(`Playing: ${track.title} by ${track.artist}`);
-                        
+
                         // Preload the next track for smoother playback
                         const nextTrackIndex = currentPlaylist.tracks.findIndex(t => t.id === track.id) + 1;
                         if (nextTrackIndex < currentPlaylist.tracks.length) {
@@ -819,7 +1009,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .catch(error => {
                         console.error('Error playing audio:', error);
                         showNotification(`Couldn't play track: ${error.message}`, true);
-                        
+
                         // Try fallback
                         playFallbackAudio(track);
                     });
@@ -828,6 +1018,38 @@ document.addEventListener('DOMContentLoaded', function() {
             // If no preview URL is available
             playFallbackAudio(track);
         }
+    }
+
+    // Function to play a YouTube track
+    function playYouTubeTrack(track) {
+        // Extract the YouTube video ID from the track ID
+        const videoId = track.id.replace('youtube-', '');
+
+        // Create the iframe for the YouTube player
+        const playerContainer = document.getElementById('youtube-player-container');
+        playerContainer.innerHTML = `
+            <iframe
+                width="100%"
+                height="315"
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1"
+                title="${track.title}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        `;
+
+        // Show the YouTube modal
+        youtubeModal.style.display = 'flex';
+
+        // Update UI
+        updatePlayButtonUI(track.id, true);
+
+        // Show notification
+        showNotification(`Playing YouTube: ${track.title} by ${track.artist}`);
+
+        // Set as currently playing
+        currentlyPlayingId = track.id;
     }
     
     // Function to play fallback audio when the main preview fails

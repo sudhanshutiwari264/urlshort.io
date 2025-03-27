@@ -1,0 +1,112 @@
+{
+  "tracks": [
+    {
+      "id": "3001",
+      "title": "Happy Day",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "pop",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3001/300/300"
+    },
+    {
+      "id": "3002",
+      "title": "Relaxing Moment",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "ambient",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8e9124485.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3002/300/300"
+    },
+    {
+      "id": "3003",
+      "title": "Sad Reflection",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "classical",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/01/27/audio_d0c19a4f4d.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3003/300/300"
+    },
+    {
+      "id": "3004",
+      "title": "Energetic Beat",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "electronic",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/03/10/audio_1a609013c8.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3004/300/300"
+    },
+    {
+      "id": "3005",
+      "title": "Focus Time",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "ambient",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2021/11/25/audio_5c6b20d881.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3005/300/300"
+    },
+    {
+      "id": "3006",
+      "title": "Happy Acoustic",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "folk",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/03/19/audio_c8e2e367a7.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3006/300/300"
+    },
+    {
+      "id": "3007",
+      "title": "Upbeat Pop",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "pop",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/10/25/audio_946b34eaf9.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3007/300/300"
+    },
+    {
+      "id": "3008",
+      "title": "Cheerful Ukulele",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "folk",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3008/300/300"
+    },
+    {
+      "id": "3009",
+      "title": "Happy Folk",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "folk",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/11/22/audio_de7d47feb0.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3009/300/300"
+    },
+    {
+      "id": "3010",
+      "title": "Energetic Dance",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "electronic",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe58f49.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3010/300/300"
+    },
+    {
+      "id": "3011",
+      "title": "Exciting Electronic",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "electronic",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/10/30/audio_f1fa483f9b.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3011/300/300"
+    },
+    {
+      "id": "3012",
+      "title": "Upbeat Energetic",
+      "artist": "Open Source Artist",
+      "album": "Open Source Collection",
+      "genre": "pop",
+      "audio_url": "https://cdn.pixabay.com/download/audio/2022/09/02/audio_69db1d6e01.mp3",
+      "cover": "https://picsum.photos/seed/opensrc3012/300/300"
+    }
+  ]
+}
