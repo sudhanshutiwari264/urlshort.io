@@ -73,13 +73,13 @@ document.addEventListener('DOMContentLoaded', function() {
             emoji: '🧠',
             title: 'Focused',
             description: 'You\'re in a productive mindset. This playlist will help you maintain concentration.',
-            genres: ['instrumental', 'focus', 'concentration']
+            keywords: ['focused', 'concentrated', 'productive', 'determined', 'attentive', 'diligent', 'studious', 'working']
         },
         romantic: {
             emoji: '❤️',
             title: 'Romantic',
             description: 'You\'re feeling romantic and emotional. Enjoy these love-inspired tracks.',
-            genres: ['love', 'romantic', 'emotional']
+            keywords: ['romantic', 'love', 'loving', 'affectionate', 'passionate', 'smitten', 'adoring', 'tender']
         }
     };
 
@@ -89,8 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners for buttons that exist in the HTML
     if (playAllBtn) playAllBtn.addEventListener('click', playAllTracks);
     if (shuffleBtn) shuffleBtn.addEventListener('click', shuffleTracks);
-    if (sharePlaylistBtn) sharePlaylistBtn.addEventListener('click', sharePlaylist);
-    if (savePlaylistBtn) savePlaylistBtn.addEventListener('click', savePlaylist);
 
     // Create notification container
     const notificationContainer = document.createElement('div');
@@ -118,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Show loading overlay
         loadingOverlay.style.display = 'flex';
-        loadingText.textContent = 'Analyzing your mood...';
 
         // Simulate API call delay
         setTimeout(() => {
@@ -228,21 +225,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to generate playlist based on mood
     async function generatePlaylist(mood) {
         const moodConfig = moodConfigs[mood];
-        
+
         // Clear previous tracks
         tracksContainer.innerHTML = '';
         currentPlaylist.tracks = [];
-        
+
         try {
+            // Create genres array from the first few keywords
+            const genres = moodConfig.keywords.slice(0, 3);
+
             // Get tracks from API
-            const tracks = await fetchTracksFromAPI(moodConfig.genres);
-            
+            const tracks = await fetchTracksFromAPI(genres);
+
             // Display tracks (this is now async)
             await displayTracks(tracks);
-            
+
         } catch (error) {
             console.error('Error generating playlist:', error);
-            
+
             // Fallback to mock data if API fails
             const mockTracks = generateMockTracks(mood);
             await displayTracks(mockTracks);
