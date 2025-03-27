@@ -19,7 +19,7 @@ A personalized URL shortener created by Sudhanshu Tiwari, designed specifically 
 
 ## How It Works
 
-SudhanshuLinks uses browser local storage to save your shortened URLs. When someone visits a short link (in the format `yourdomain.com/?s=shortcode`), the application checks if the shortcode exists in the database and redirects to the corresponding long URL.
+SudhanshuLinks uses browser local storage to save your shortened URLs. When someone visits a short link (in the format `https://username.github.io/repository/?s=shortcode`), the application checks if the shortcode exists in the database and redirects to the corresponding long URL.
 
 ## Deployment Instructions
 

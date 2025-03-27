@@ -98,14 +98,19 @@ input[type="text"]:focus {
     border-radius: 8px;
     border: 1px solid var(--border-color);
     overflow: hidden;
+    flex-wrap: nowrap;
+    max-width: 100%;
 }
 
 .domain-prefix {
     padding: 0.8rem 0.5rem;
     background-color: #e9eaed;
     color: var(--light-text);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
 }
 
 .custom-path-container input {
