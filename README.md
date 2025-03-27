@@ -1,84 +1,48 @@
-# SudhanshuLinks - Personal URL Shortener for GitHub Pages
+# SudhanshuLinks - Simple URL Shortener
 
-A personalized URL shortener created by Sudhanshu Tiwari, designed specifically to work with GitHub Pages. This tool allows you to create custom short links that are easy to share and remember, with all data stored securely in your browser.
-
-![SudhanshuLinks](https://via.placeholder.com/800x400?text=SudhanshuLinks)
+A simple URL shortener that works entirely in the browser. No server required!
 
 ## Features
 
 - Create short URLs with custom paths
-- Generate QR codes for your short links
-- Track the number of clicks on your links
-- Copy links to clipboard with one click
-- Responsive design that works on all devices
-- 100% client-side - all data stored in your browser
-- No server required - works perfectly on GitHub Pages
-- Privacy-focused - your data never leaves your device
-- Personalized with your branding
-- Simple, clean, and sober design
+- Generate QR codes for your links
+- Track click counts
+- Works entirely in the browser using localStorage
+- No server or database required
+- Can be hosted on GitHub Pages
+
+## How to Use
+
+1. Enter a long URL you want to shorten
+2. (Optional) Enter a custom path
+3. Click "Shorten URL"
+4. Copy the shortened URL or generate a QR code
+5. Share your short link!
+
+## How to Deploy
+
+1. Fork this repository
+2. Enable GitHub Pages in your repository settings
+3. Your URL shortener will be available at `https://yourusername.github.io/repository-name/`
 
 ## How It Works
 
-SudhanshuLinks uses browser local storage to save your shortened URLs. The application supports both standard GitHub Pages URLs and custom domains:
-
-1. **GitHub Pages URL format**: `https://sudhanshutiwari264.github.io/shortner/?s=shortcode`
-2. **Custom domain format** (if configured): `https://yourdomain.com/?s=shortcode`
-
-When someone visits a short link, the application checks if the shortcode exists in the database and redirects to the corresponding long URL.
-
-## Deployment Instructions
-
-### Deploying to GitHub Pages
-
-1. Fork this repository to your GitHub account
-2. Go to the repository settings
-3. Navigate to the "Pages" section
-4. Select the branch you want to deploy (usually `main` or `master`)
-5. Click "Save"
-6. Your URL shortener will be available at `https://yourusername.github.io/repository-name/`
-
-### Using a Custom Domain
-
-1. After deploying to GitHub Pages, go to the repository settings
-2. In the "Pages" section, enter your custom domain
-3. Update your domain's DNS settings:
-   - Add an A record pointing to GitHub Pages IP addresses:
-     ```
-     185.199.108.153
-     185.199.109.153
-     185.199.110.153
-     185.199.111.153
-     ```
-   - Or add a CNAME record pointing to `sudhanshutiwari264.github.io`
-4. Edit the CNAME file in the repository to include your custom domain
-5. Wait for DNS propagation (may take up to 48 hours)
-
-The URL shortener will automatically detect if it's running on a custom domain and adjust the URLs accordingly.
-
-## Usage
-
-1. Enter the long URL you want to shorten
-2. (Optional) Enter a custom path for your short URL
-3. Click "Shorten"
-4. Copy the generated short URL or QR code
-5. Share your short link!
+This URL shortener uses your browser's localStorage to save the mapping between short codes and original URLs. When someone visits a short link, the application looks up the original URL in localStorage and redirects to it.
 
 ## Limitations
 
-- Since this application uses browser local storage, your shortened URLs are stored in the browser you use to create them
-- The application works best with a custom domain
-- GitHub Pages has usage limits, so this is best for personal use rather than high-traffic applications
+- Since this uses localStorage, your shortened URLs are only stored in the browser you use to create them
+- If you clear your browser data, your shortened URLs will be lost
+- This is designed for personal use rather than as a public service
 
-## Connect with Sudhanshu
+## Created By
 
-- Twitter/X: [https://x.com/sudhanshusX](https://x.com/sudhanshusX)
-- LinkedIn: [https://www.linkedin.com/in/tiwari-sudhanshu/](https://www.linkedin.com/in/tiwari-sudhanshu/)
-- GitHub: [https://github.com/sudhanshutiwari264](https://github.com/sudhanshutiwari264)
+Sudhanshu Tiwari
+
+- Twitter/X: [@sudhanshusX](https://x.com/sudhanshusX)
+- LinkedIn: [tiwari-sudhanshu](https://www.linkedin.com/in/tiwari-sudhanshu/)
+- GitHub: [sudhanshutiwari264](https://github.com/sudhanshutiwari264)
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-© 2025 Sudhanshu Tiwari. All rights reserved.
+MIT License

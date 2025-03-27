@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting... | SudhanshuLinks</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 500px;
+        }
+        
+        h1 {
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+        
+        .loader {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(52, 152, 219, 0.3);
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s ease-in-out infinite;
+            margin: 1rem 0;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .message {
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+        }
+        
+        .home-link {
+            display: inline-block;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        .home-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SudhanshuLinks</h1>
+        
+        <div id="redirect-message">
+            <div class="loader"></div>
+            <p class="message">Redirecting you to your destination...</p>
+        </div>
+        
+        <div id="error-message" style="display: none;">
+            <p class="message">Oops! This link doesn't exist or has been removed.</p>
+            <a href="index.html" class="home-link">Go to Homepage</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get the shortcode from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const shortCode = urlParams.get('s');
+            
+            if (!shortCode) {
+                showError();
+                return;
+            }
+            
+            // Get URL database from localStorage
+            let urlDatabase;
+            try {
+                const data = localStorage.getItem('sudhanshulinkUrls');
+                urlDatabase = data ? JSON.parse(data) : {};
+            } catch (e) {
+                console.error('Error loading database:', e);
+                urlDatabase = {};
+            }
+            
+            // Check if the shortcode exists
+            if (urlDatabase[shortCode]) {
+                // Increment click count
+                urlDatabase[shortCode].clicks++;
+                
+                // Save updated database
+                try {
+                    localStorage.setItem('sudhanshulinkUrls', JSON.stringify(urlDatabase));
+                } catch (e) {
+                    console.error('Error saving database:', e);
+                }
+                
+                // Get the long URL
+                const longUrl = urlDatabase[shortCode].longUrl;
+                
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = longUrl;
+                }, 1500);
+            } else {
+                showError();
+            }
+            
+            function showError() {
+                document.getElementById('redirect-message').style.display = 'none';
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
