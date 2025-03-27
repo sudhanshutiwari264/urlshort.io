@@ -1,6 +1,12 @@
 # Enable URL rewriting
 RewriteEngine On
 
+# Redirect all short URLs to the r.html page
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)$ r.html#$1 [L,QSA]# Enable URL rewriting
+RewriteEngine On
+
 # Redirect all short URLs to the redirect.html page
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

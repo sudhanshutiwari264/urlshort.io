@@ -139,8 +139,38 @@
 
       // Handle the redirect process
       function handleRedirect() {
+        // Get the code from various possible sources
+        let code = '';
+
+        // 1. Check hash fragment first (most common case)
         const urlHash = window.location.hash;
-        const code = urlHash.substring(1);
+        if (urlHash && urlHash.length > 1) {
+          code = urlHash.substring(1);
+          console.log('Found code in hash:', code);
+        }
+
+        // 2. Check URL path (for GitHub Pages compatibility)
+        if (!code) {
+          const path = window.location.pathname;
+          const pathSegments = path.split('/');
+          const lastSegment = pathSegments[pathSegments.length - 1];
+
+          // If the last segment is not r.html, it might be our code
+          if (lastSegment && lastSegment !== 'r.html' && !lastSegment.includes('.')) {
+            code = lastSegment;
+            console.log('Found code in path:', code);
+          }
+        }
+
+        // 3. Check query parameters
+        if (!code) {
+          const urlParams = new URLSearchParams(window.location.search);
+          const queryCode = urlParams.get('code');
+          if (queryCode) {
+            code = queryCode;
+            console.log('Found code in query parameters:', code);
+          }
+        }
 
         const destinationUrlElement = document.getElementById('destination-url');
         const progressBar = document.getElementById('progress-bar');
@@ -152,31 +182,46 @@
 
         if (!code) {
           destinationUrlElement.textContent = 'Invalid URL code';
+          console.error('No code found in URL');
           return;
         }
 
+        console.log('Looking for code:', code);
         const linksJson = localStorage.getItem('url2025_links');
         const links = linksJson ? JSON.parse(linksJson) : [];
+        console.log('Found links in storage:', links.length);
 
-        const link = links.find(link => link.urlCode === code);
+        // Try exact match first
+        let link = links.find(link => link.urlCode === code);
+
+        // Try case-insensitive match if not found
+        if (!link) {
+          link = links.find(link => link.urlCode.toLowerCase() === code.toLowerCase());
+        }
 
         if (!link) {
+          console.error('No link found for code:', code);
           destinationUrlElement.textContent = 'Invalid or expired URL';
           return;
         }
 
+        console.log('Found link:', link);
         destinationUrlElement.textContent = link.longUrl;
 
-        link.clicks += 1;
+        // Update click count
+        link.clicks = (link.clicks || 0) + 1;
         link.lastClickedAt = new Date().toISOString();
 
+        // Save updated link back to localStorage
         const updatedLinks = links.map(l => l.id === link.id ? link : l);
         localStorage.setItem('url2025_links', JSON.stringify(updatedLinks));
 
+        // Set up redirect
         let redirectTimeout = setTimeout(() => {
           window.location.href = link.longUrl;
         }, 3000);
 
+        // Redirect now button
         redirectNowButton.addEventListener('click', function() {
           clearTimeout(redirectTimeout);
           window.location.href = link.longUrl;

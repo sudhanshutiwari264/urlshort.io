@@ -35,7 +35,27 @@ const STORAGE_KEY = 'url2025_links';
 const CURRENT_YEAR = 2025; // Set to 2025 as requested
 
 // Base URL for shortened links
-const BASE_URL = window.location.origin + '/';
+// Dynamically determine the base URL to work on both local and GitHub Pages
+function getBaseUrl() {
+  const origin = window.location.origin;
+  const pathname = window.location.pathname;
+
+  // Check if we're on GitHub Pages (contains github.io)
+  if (origin.includes('github.io')) {
+    // Extract the repository name from the pathname
+    const pathParts = pathname.split('/');
+    const repoName = pathParts[1]; // The repository name should be the first part after the domain
+
+    if (repoName) {
+      return `${origin}/${repoName}/`;
+    }
+  }
+
+  // For local development or other hosting
+  return origin + '/';
+}
+
+const BASE_URL = getBaseUrl();
 
 // Initialize the app
 function initApp() {
@@ -148,8 +168,12 @@ function generateShortUrl(longUrl, customCode, expirationDays) {
   // Generate a unique code if no custom code is provided
   const urlCode = customCode || generateUniqueCode();
 
-  // Create a shorter URL format - use r.html for maximum brevity
+  // Create multiple URL formats for better compatibility
+  // 1. Hash-based format (works everywhere)
   const shortUrl = `${BASE_URL}r.html#${urlCode}`;
+
+  // We'll use the hash-based format as our primary URL, but the system
+  // will also support /r/CODE format through our r/index.html handler
 
   // Calculate expiration date if provided
   let expiresAt = null;
@@ -725,9 +749,28 @@ function hideModals() {
 
 // Check for redirect
 function checkForRedirect() {
-  // We're now using redirect.html with hash-based routing
-  // This function is kept for compatibility but doesn't need to do anything
-  console.log('Using hash-based redirection through redirect.html');
+  // Check if we're on r.html page
+  if (window.location.pathname.endsWith('r.html') || window.location.pathname.includes('/r/')) {
+    console.log('On redirect page, handling redirection...');
+    return true;
+  }
+
+  // Check if there's a hash that might be a code
+  const hash = window.location.hash;
+  if (hash && hash.length > 1) {
+    const code = hash.substring(1);
+
+    // Check if this is a valid code in our system
+    const link = getLinkByCode(code);
+    if (link) {
+      console.log('Found valid code in hash, redirecting...');
+      window.location.href = `${BASE_URL}r.html#${code}`;
+      return true;
+    }
+  }
+
+  console.log('No redirection needed');
+  return false;
 }
 
 // Show toast notification
